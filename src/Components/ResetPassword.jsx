@@ -6,7 +6,7 @@ import './Styles/login.css';
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const token = searchParams.get('token');
+    const token = searchParams.get('token') || localStorage.getItem('loginToken');
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');

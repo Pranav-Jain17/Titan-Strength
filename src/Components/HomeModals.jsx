@@ -1,36 +1,72 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import './Styles/homeModals.css';
 
 function HomeModals({ type, onClose, user, actions }) {
+    const navigate = useNavigate();
+    const [inputValue, setInputValue] = useState("");
     const [settingsTab, setSettingsTab] = useState('general');
-    const [isPasswordExpanding, setIsPasswordExpanding] = useState(false);
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmNewPassword, setConfirmNewPassword] = useState("");
-    const [currentPassword, setCurrentPassword] = useState("");
 
     useEffect(() => {
         if (type) {
+            setInputValue("");
             setSettingsTab('general');
-            setIsPasswordExpanding(false);
-            setNewPassword("");
-            setConfirmNewPassword("");
-            setCurrentPassword("");
         }
     }, [type]);
 
     if (!type) return null;
 
     const handleSubmit = () => {
-        if (type === 'settings') {
-            if (!currentPassword || !newPassword || !confirmNewPassword) return toast.error("Please fill all fields");
-            if (newPassword !== confirmNewPassword) return toast.error("New passwords do not match");
-            actions.changePassword(currentPassword, newPassword);
+        if (type === 'create') {
+            if (!inputValue) return toast.error("Meet Title is required!");
+            actions.create(inputValue);
+        } else if (type === 'join') {
+            if (!inputValue) return toast.error("Room ID is required.");
+            actions.join(inputValue);
         }
     };
 
     const renderContent = () => {
         switch (type) {
+            case "create":
+                return (
+                    <>
+                        <h2>New Meeting</h2>
+                        <div className="input-group-modern">
+                            <label>Meeting Title</label>
+                            <input
+                                autoFocus
+                                type="text"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                                placeholder="e.g. Daily Standup"
+                            />
+                        </div>
+                    </>
+                );
+            case "join":
+                return (
+                    <>
+                        <h2>Join Meeting</h2>
+                        <div className="input-group-modern">
+                            <label>Room ID</label>
+                            <input
+                                autoFocus
+                                type="text"
+                                inputMode="numeric"
+                                value={inputValue}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val === "" || /^[0-9]+$/.test(val)) setInputValue(val);
+                                }}
+                                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                                placeholder="e.g. 123456"
+                            />
+                        </div>
+                    </>
+                );
             case "profile":
                 return (
                     <div className="profile-modal-content">
@@ -70,51 +106,28 @@ function HomeModals({ type, onClose, user, actions }) {
                                 <div className="settings-list fade-in">
                                     <div className="setting-item">
                                         <div className="setting-info">
-                                            <span>App Version</span>
-                                            <small>v1.0.0 (Beta)</small>
+                                            <span>On the way ...</span>
                                         </div>
                                     </div>
                                 </div>
                             )}
                             {settingsTab === 'security' && (
                                 <div className="settings-list fade-in">
-                                    {!isPasswordExpanding ? (
-                                        <div className="setting-card">
-                                            <div className="setting-info">
-                                                <span>Password</span>
-                                                <small>Protect your account</small>
-                                            </div>
-                                            <button className="btn-secondary" onClick={() => setIsPasswordExpanding(true)}>Change</button>
+                                    <div className="setting-card">
+                                        <div className="setting-info">
+                                            <span>Password</span>
+                                            <small>Protect your account</small>
                                         </div>
-                                    ) : (
-                                        <div className="password-form fade-in">
-                                            <h4>Change Password</h4>
-                                            <input
-                                                autoFocus
-                                                type="password"
-                                                placeholder="Current Password"
-                                                value={currentPassword}
-                                                onChange={(e) => setCurrentPassword(e.target.value)}
-                                            />
-                                            <input
-                                                type="password"
-                                                placeholder="New Password"
-                                                value={newPassword}
-                                                onChange={(e) => setNewPassword(e.target.value)}
-                                            />
-                                            <input
-                                                type="password"
-                                                placeholder="Confirm New Password"
-                                                value={confirmNewPassword}
-                                                onChange={(e) => setConfirmNewPassword(e.target.value)}
-                                                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                                            />
-                                            <div className="form-actions-inline">
-                                                <button className="btn-text" onClick={() => setIsPasswordExpanding(false)}>Cancel</button>
-                                                <button className="btn-primary" onClick={handleSubmit}>Update</button>
-                                            </div>
-                                        </div>
-                                    )}
+                                        <button
+                                            className="btn-secondary"
+                                            onClick={() => {
+                                                onClose();
+                                                navigate('/reset-password');
+                                            }}
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -132,13 +145,22 @@ function HomeModals({ type, onClose, user, actions }) {
             <div className="modal-box">
                 {renderContent()}
 
+                {type === 'create' || type === 'join' ? (
+                    <div className="modal-footer">
+                        <button className="btn-cancel" onClick={onClose}>Cancel</button>
+                        <button className="btn-primary" onClick={handleSubmit}>
+                            {type === 'create' ? 'Create' : 'Join'}
+                        </button>
+                    </div>
+                ) : null}
+
                 {type === 'profile' ? (
                     <div className="modal-footer">
                         <button className="btn-primary full-width" onClick={onClose}>Close</button>
                     </div>
                 ) : null}
 
-                {type === 'settings' && !isPasswordExpanding ? (
+                {type === 'settings' ? (
                     <div className="modal-footer">
                         <button className="btn-primary full-width" onClick={onClose}>Done</button>
                     </div>

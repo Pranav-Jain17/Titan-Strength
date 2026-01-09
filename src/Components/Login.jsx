@@ -97,6 +97,7 @@ const Login = () => {
                                 onChange={(e) => setResetEmail(e.target.value)}
                                 required
                                 disabled={isLoading}
+                                autoComplete='Registered email'
                             />
                         </div>
 
@@ -126,6 +127,7 @@ const Login = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 disabled={isLoading}
+                                autoComplete='email'
                             />
                         </div>
 
@@ -141,6 +143,7 @@ const Login = () => {
                                     required
                                     disabled={isLoading}
                                     className="password-input"
+                                    autoComplete='password'
                                 />
                                 <button
                                     type="button"
