@@ -1,110 +1,216 @@
-/* Container that takes full screen height and centers content */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+}
+
 .login-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-image: url('/public/assets/loginBackground.jpg');
-    background-size: cover;
-    background-position: center;
+    height: 100dvh;
+    width: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
 }
 
-/* The white box containing the form */
+.login-page::before {
+    content: "";
+    position: fixed;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-image: url('/public/assets/loginBackground.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(8px);
+    z-index: 0;
+}
+
 .login-card {
-    background: white;
-    width: 100%;
-    max-width: 400px;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    width: 90%;
+    max-width: 420px;
+    padding: 45px;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.25);
 }
 
 .login-card h2 {
     margin-top: 0;
-    margin-bottom: 10px;
-    color: #333;
+    margin-bottom: 8px;
+    color: #1a1a1a;
     text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 .subtitle {
-    color: #666;
+    color: #555;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
     font-size: 0.95rem;
+    font-weight: 500;
 }
 
-/* Input Fields */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    position: relative;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 8px;
     color: #333;
-    font-weight: 500;
-    font-size: 0.9rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-group input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    padding: 14px 16px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
     font-size: 1rem;
-    box-sizing: border-box;
-    /* Ensures padding doesn't affect width */
-    transition: border-color 0.2s;
+    color: #333;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .form-group input:focus {
-    border-color: #007bff;
-    /* Blue focus color */
-    outline: none;
+    background-color: #fff;
+    border-color: #1a1a1a;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Forgot Password Link */
+.password-wrapper {
+    position: relative;
+}
+
+.password-input {
+    padding-right: 40px;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: #666;
+    transition: color 0.2s;
+}
+
+.password-toggle-btn:hover {
+    color: #1a1a1a;
+}
+
 .forgot-password-container {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .link-text {
-    color: #007bff;
+    color: #555;
     text-decoration: none;
     font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.link-text::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #1a1a1a;
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
 }
 
 .link-text:hover {
-    text-decoration: underline;
+    color: #1a1a1a;
 }
 
-/* Submit Button */
+.link-text:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
 .login-submit-btn {
     width: 100%;
-    padding: 12px;
-    background-color: #333;
-    /* Dark button matching navbar */
+    padding: 16px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    font-weight: bold;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
 }
 
 .login-submit-btn:hover {
-    background-color: #555;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
 }
 
-/* Footer (Signup) */
+.login-submit-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.login-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .signup-footer {
-    margin-top: 25px;
+    margin-top: 30px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    color: #555;
 }
 
 .text-muted {
@@ -112,5 +218,23 @@
 }
 
 .bold {
-    font-weight: 600;
+    font-weight: 800;
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.bold:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 30px 24px;
+        width: 92%;
+    }
+
+    .login-card h2 {
+        font-size: 1.7rem;
+    }
 }
