@@ -38,6 +38,18 @@ const Home = () => {
         navigate('/login');
     };
 
+    // const handleLogout = async () => {
+    //     try {
+    //         if (token) await apiRequest('https://titan-strength.me/api/v1/auth/logout', 'POST');
+    //     } catch (err) {
+    //         console.error(err);
+    //     } finally {
+    //         localStorage.clear();
+    //         toast.success("Logged out successfully");
+    //         navigate("/login");
+    //     }
+    // };
+
     const openModal = (type) => {
         setActiveModal(type);
         setIsDropdownOpen(false);
@@ -99,13 +111,13 @@ const Home = () => {
                             {isDropdownOpen && (
                                 <div className="dropdown-menu">
                                     <div className="dropdown-item" onClick={() => openModal("profile")}>
-                                        Profile
+                                        <img src="/assets/svg/profile.svg" alt="" className="icon-small" /> Profile
                                     </div>
                                     <div className="dropdown-item" onClick={() => openModal("settings")}>
-                                        Settings
+                                        <img src="/assets/svg/settings.svg" alt="" className="icon-small" /> Settings
                                     </div>
                                     <div className="dropdown-item logout" onClick={handleLogout}>
-                                        Logout
+                                        <img src="/assets/svg/logout.svg" alt="" className="icon-small" /> Logout
                                     </div>
                                 </div>
                             )}
@@ -113,10 +125,6 @@ const Home = () => {
                     )}
                 </div>
             </nav>
-
-            <main className="main-content">
-                <h1>Welcome to Titan-Strength</h1>
-            </main>
 
             <HomeModals
                 type={activeModal}

@@ -1,35 +1,77 @@
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
 }
 
 .home-container {
     min-height: 100vh;
-    background-color: #f4f4f4;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-container::before {
+    content: "";
+    position: fixed;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background-image: url('/public/assets/loginBackground.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(12px);
+    z-index: -1;
 }
 
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #333;
-    color: white;
-    padding: 0 20px;
-    height: 60px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0 30px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    letter-spacing: 1px;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
     text-transform: uppercase;
 }
 
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
+}
+
+.login-btn {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
 }
 
 .profile-container {
@@ -37,50 +79,99 @@ body {
 }
 
 .profile-img {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid white;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.profile-img:hover {
+    transform: scale(1.05);
+    border-color: #1a1a1a;
 }
 
 .dropdown-menu {
     position: absolute;
-    top: 50px;
+    top: 60px;
     right: 0;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    width: 150px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    width: 200px;
     overflow: hidden;
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    padding: 8px;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     padding: 12px 16px;
     color: #333;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: all 0.2s;
 }
 
 .dropdown-item:hover {
-    background-color: #f0f0f0;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #1a1a1a;
+}
+
+.icon-small {
+    width: 20px;
+    height: 20px;
+    opacity: 0.7;
+}
+
+.dropdown-item:hover .icon-small {
+    opacity: 1;
 }
 
 .dropdown-item.logout {
+    margin-top: 8px;
     color: #e63946;
-    border-top: 1px solid #eee;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 16px;
 }
 
 .dropdown-item.logout:hover {
-    background-color: #ffe5e7;
+    background-color: rgba(230, 57, 70, 0.08);
 }
 
-.main-content {
-    padding: 20px;
-    text-align: center;
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 20px;
+    }
+
+    .logo {
+        font-size: 1.3rem;
+    }
+
 }
