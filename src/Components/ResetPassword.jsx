@@ -56,7 +56,7 @@ const ResetPassword = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    password,
+                    newPassword: password,
                     confirmPassword
                 }),
             });
@@ -72,7 +72,7 @@ const ResetPassword = () => {
                 toast.success("Password reset successful! Please login.");
                 navigate('/login');
             } else {
-                toast.error(data.message || "Failed to reset password.");
+                toast.error(data.message || data.error || "Failed to reset password.");
             }
         } catch (error) {
             console.error("Reset Password Error:", error);
