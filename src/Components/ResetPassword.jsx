@@ -42,8 +42,8 @@ const ResetPassword = () => {
             return;
         }
 
-        if (password.length < 6) {
-            toast.error("Password must be at least 6 characters long.");
+        if (password.length < 8) {
+            toast.error("Password must be at least 8 characters long.");
             return;
         }
 
@@ -51,12 +51,20 @@ const ResetPassword = () => {
 
         try {
             const response = await fetch(`https://titan-strength.me/api/v1/auth/reset-password/${token}`, {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ password }),
+                body: JSON.stringify({
+                    password,
+                    confirmPassword
+                }),
             });
+
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Server returned a non-JSON response. Check your API URL and Method.");
+            }
 
             const data = await response.json();
 
@@ -68,7 +76,7 @@ const ResetPassword = () => {
             }
         } catch (error) {
             console.error("Reset Password Error:", error);
-            toast.error("Something went wrong. Please try again.");
+            toast.error(error.message || "Something went wrong. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -81,6 +89,13 @@ const ResetPassword = () => {
                 <p className="subtitle">Please create a new, strong password.</p>
 
                 <form onSubmit={handleSubmit}>
+                    <input
+                        type="text"
+                        name="username"
+                        autoComplete="username"
+                        style={{ display: 'none' }}
+                    />
+
                     <div className="form-group">
                         <label htmlFor="new-password">New Password</label>
                         <div className="password-wrapper">
@@ -93,6 +108,7 @@ const ResetPassword = () => {
                                 required
                                 disabled={isLoading}
                                 className="password-input"
+                                autoComplete="new-password"
                             />
                             <button
                                 type="button"
@@ -120,6 +136,7 @@ const ResetPassword = () => {
                                 required
                                 disabled={isLoading}
                                 className="password-input"
+                                autoComplete="new-password"
                             />
                             <button
                                 type="button"
