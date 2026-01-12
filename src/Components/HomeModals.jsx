@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import UpdatePassword from './UpdatePassword';
 import './Styles/homeModals.css';
 
 function HomeModals({ type, onClose, user, actions }) {
-    const navigate = useNavigate();
     const [inputValue, setInputValue] = useState("");
     const [settingsTab, setSettingsTab] = useState('general');
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
 
     useEffect(() => {
         if (type) {
             setInputValue("");
             setSettingsTab('general');
+            setShowPasswordForm(false);
         }
     }, [type]);
+
+    const handleTabChange = (tab) => {
+        setSettingsTab(tab);
+        setShowPasswordForm(false);
+    };
 
     if (!type) return null;
 
@@ -98,36 +104,62 @@ function HomeModals({ type, onClose, user, actions }) {
                     <div className="settings-container">
                         <h2>Settings</h2>
                         <div className="settings-tabs">
-                            <button className={`tab-btn ${settingsTab === 'general' ? 'active' : ''}`} onClick={() => setSettingsTab('general')}>General</button>
-                            <button className={`tab-btn ${settingsTab === 'security' ? 'active' : ''}`} onClick={() => setSettingsTab('security')}>Security</button>
+                            <button
+                                className={`tab-btn ${settingsTab === 'general' ? 'active' : ''}`}
+                                onClick={() => handleTabChange('general')}
+                            >
+                                General
+                            </button>
+                            <button
+                                className={`tab-btn ${settingsTab === 'security' ? 'active' : ''}`}
+                                onClick={() => handleTabChange('security')}
+                            >
+                                Security
+                            </button>
                         </div>
                         <div className="settings-body">
                             {settingsTab === 'general' && (
                                 <div className="settings-list fade-in">
                                     <div className="setting-item">
                                         <div className="setting-info">
-                                            <span>On the way ...</span>
+                                            <span>General Settings</span>
+                                            <small>Coming soon...</small>
                                         </div>
                                     </div>
                                 </div>
                             )}
                             {settingsTab === 'security' && (
-                                <div className="settings-list fade-in">
-                                    <div className="setting-card">
-                                        <div className="setting-info">
-                                            <span>Password</span>
-                                            <small>Protect your account</small>
+                                <div className="fade-in">
+                                    {!showPasswordForm ? (
+                                        <div className="settings-list">
+                                            <div className="setting-item">
+                                                <div className="setting-info">
+                                                    <span>Update Password</span>
+                                                    <small>Change your account password securely</small>
+                                                </div>
+                                                <button
+                                                    className="btn-secondary"
+                                                    onClick={() => setShowPasswordForm(true)}
+                                                >
+                                                    Update
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button
-                                            className="btn-secondary"
-                                            onClick={() => {
-                                                onClose();
-                                                navigate('/reset-password');
-                                            }}
-                                        >
-                                            Reset
-                                        </button>
-                                    </div>
+                                    ) : (
+                                        <div className="password-form-container">
+                                            <div className="form-header">
+                                                <button
+                                                    className="btn-back"
+                                                    onClick={() => setShowPasswordForm(false)}
+                                                    title="Go Back"
+                                                >
+                                                    ←
+                                                </button>
+                                                <h4>Change Password</h4>
+                                            </div>
+                                            <UpdatePassword onClose={onClose} />
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -145,26 +177,26 @@ function HomeModals({ type, onClose, user, actions }) {
             <div className="modal-box">
                 {renderContent()}
 
-                {type === 'create' || type === 'join' ? (
+                {(type === 'create' || type === 'join') && (
                     <div className="modal-footer">
                         <button className="btn-cancel" onClick={onClose}>Cancel</button>
                         <button className="btn-primary" onClick={handleSubmit}>
                             {type === 'create' ? 'Create' : 'Join'}
                         </button>
                     </div>
-                ) : null}
+                )}
 
-                {type === 'profile' ? (
+                {type === 'profile' && (
                     <div className="modal-footer">
                         <button className="btn-primary full-width" onClick={onClose}>Close</button>
                     </div>
-                ) : null}
+                )}
 
-                {type === 'settings' ? (
+                {type === 'settings' && !showPasswordForm && (
                     <div className="modal-footer">
                         <button className="btn-primary full-width" onClick={onClose}>Done</button>
                     </div>
-                ) : null}
+                )}
             </div>
         </div>
     );

@@ -30,59 +30,35 @@ const Home = () => {
         setIsDropdownOpen(!isDropdownOpen);
     };
 
-    const handleLogout = () => {
-        localStorage.clear();
-        setUser(null);
-        setIsDropdownOpen(false);
-        toast.info("Logged out successfully");
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('loginToken');
+            if (token) {
+                await fetch('https://titan-strength.me/api/v1/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Logout failed", error);
+        } finally {
+            localStorage.clear();
+            setUser(null);
+            setIsDropdownOpen(false);
+            toast.info("Logged out successfully");
+            navigate('/login');
+        }
     };
-
-    // const handleLogout = async () => {
-    //     try {
-    //         if (token) await apiRequest('https://titan-strength.me/api/v1/auth/logout', 'POST');
-    //     } catch (err) {
-    //         console.error(err);
-    //     } finally {
-    //         localStorage.clear();
-    //         toast.success("Logged out successfully");
-    //         navigate("/login");
-    //     }
-    // };
 
     const openModal = (type) => {
         setActiveModal(type);
         setIsDropdownOpen(false);
     };
 
-    const handleChangePassword = async (currentPassword, newPassword) => {
-        try {
-            const token = localStorage.getItem('loginToken');
-            const response = await fetch('https://titan-strength.me/api/v1/auth/update-password', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ currentPassword, newPassword }),
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                toast.success("Password updated successfully");
-                setActiveModal(null);
-            } else {
-                toast.error(data.message || "Failed to update password");
-            }
-        } catch (error) {
-            console.error(error);
-            toast.error("Something went wrong");
-        }
-    };
-
     const modalActions = {
-        changePassword: handleChangePassword,
         create: (val) => console.log("Create meeting:", val),
         join: (val) => console.log("Join meeting:", val)
     };

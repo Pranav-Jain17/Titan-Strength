@@ -6,10 +6,12 @@ import './Styles/login.css';
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const token = searchParams.get('token') || localStorage.getItem('loginToken');
+    const token = searchParams.get('token');
+
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     if (!token) {
@@ -48,14 +50,12 @@ const ResetPassword = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('https://titan-strength.me/api/v1/auth/reset-password/:${token}', {
+            const response = await fetch(`https://titan-strength.me/api/v1/auth/reset-password/${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    password
-                }),
+                body: JSON.stringify({ password }),
             });
 
             const data = await response.json();
@@ -110,15 +110,29 @@ const ResetPassword = () => {
 
                     <div className="form-group">
                         <label htmlFor="confirm-password">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirm-password"
-                            placeholder="Confirm new password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                            disabled={isLoading}
-                        />
+                        <div className="password-wrapper">
+                            <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                id="confirm-password"
+                                placeholder="Confirm new password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                required
+                                disabled={isLoading}
+                                className="password-input"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="password-toggle-btn"
+                            >
+                                {showConfirmPassword ? (
+                                    <img src="/assets/svg/hidePswd.svg" alt="Hide Password" width="20" height="20" />
+                                ) : (
+                                    <img src="/assets/svg/showPswd.svg" alt="Show Password" width="20" height="20" />
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     <button
