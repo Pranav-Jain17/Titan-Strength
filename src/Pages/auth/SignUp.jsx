@@ -1,11 +1,11 @@
-import { useState, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { AuthContext } from '../../Context/AuthContext';
+import { useAuth } from '../../Context/AuthContext';
 import '../../Styles/signUp.css';
 
 const Signup = () => {
-    const { backendUrl } = useContext(AuthContext);
+    const { backendUrl, isLoggedin, user } = useAuth();
     const navigate = useNavigate();
 
     const [username, setUsername] = useState('');
@@ -13,6 +13,13 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (isLoggedin && user) {
+            const role = user.role || 'member';
+            navigate(`/${role}/dashboard`, { replace: true });
+        }
+    }, [isLoggedin, user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

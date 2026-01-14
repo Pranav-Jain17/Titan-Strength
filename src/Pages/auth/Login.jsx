@@ -7,11 +7,18 @@ import '../../Styles/login.css';
 const Login = () => {
     const navigate = useNavigate();
     const { login: contextLogin } = useAuth();
-
+    const { isLoggedin, user } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (isLoggedin && user) {
+            const role = user.role || 'member';
+            navigate(`/${role}/dashboard`, { replace: true });
+        }
+    }, [isLoggedin, user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,19 +50,19 @@ const Login = () => {
 
                 switch (data.user.role) {
                     case 'owner':
-                        navigate('/owner/dashboard');
+                        navigate('/owner/dashboard', { replace: true });
                         break;
                     case 'manager':
-                        navigate('/manager/dashboard');
+                        navigate('/manager/dashboard', { replace: true });
                         break;
                     case 'trainer':
-                        navigate('/trainer/dashboard');
+                        navigate('/trainer/dashboard', { replace: true });
                         break;
                     case 'member':
-                        navigate('/member/dashboard');
+                        navigate('/member/dashboard', { replace: true });
                         break;
                     case 'user':
-                        navigate('/user/dashboard');
+                        navigate('/user/dashboard', { replace: true });
                         break;
                     default:
                         navigate('/');

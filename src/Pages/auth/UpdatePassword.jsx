@@ -43,14 +43,22 @@ const UpdatePassword = ({ onClose }) => {
 
         setIsLoading(true);
         try {
-            const token = localStorage.getItem('loginToken');
-            const response = await fetch(`${backendUrl}/api/v1/auth/update-password`, {
+            const storedUser = localStorage.getItem('titanUser');
+            const token = storedUser ? JSON.parse(storedUser).token : null;
+
+            if (!token) {
+                toast.error("Authentication session missing. Please login again.");
+                setIsLoading(false);
+                return;
+            }
+
+            const response = await fetch(`${backendUrl}/api/v1/auth/updatepassword`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
+                body: JSON.stringify({ currentPassword, newPassword }),
             });
 
             const data = await response.json();
@@ -59,7 +67,7 @@ const UpdatePassword = ({ onClose }) => {
                 toast.success(data.message || "Password updated successfully");
                 if (onClose) onClose();
             } else {
-                toast.error(data.message || "Failed to update password");
+                toast.error(data.error || "Failed to update password");
             }
         } catch (error) {
             console.error(error);
