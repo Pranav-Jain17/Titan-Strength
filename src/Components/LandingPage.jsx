@@ -14,19 +14,19 @@ const LandingPage = () => {
 
     const getDashboardLink = () => {
         if (!isAuthenticated || !userData) return "/signup";
-
         const role = userData.role || 'user';
         return `/${role}/dashboard`;
     };
 
     return (
-        <div className="landing-page">
+        <div className="landing-page" id="home">
 
             <header className="hero-section">
                 <div className="hero-overlay">
                     <div className="hero-content fade-in-up">
                         <h1 className="hero-title">
-                            UNLEASH YOUR INNER <span className="text-highlight">TITAN</span>
+                            Your Fitness Journey <br />
+                            Starts <span className="text-highlight">Here</span>
                         </h1>
                         <p className="hero-subtitle">
                             Personalized workouts, precision nutrition, and expert coaching.
@@ -35,60 +35,156 @@ const LandingPage = () => {
 
                         <div className="hero-buttons">
                             <Link to={getDashboardLink()} className="btn-primary-large">
-                                {isAuthenticated ? "Go to Dashboard" : "Start Your Journey"}
+                                {isAuthenticated ? "Go to Dashboard" : "Join Now"}
                             </Link>
-                            {!isAuthenticated && (
-                                <Link to="/login" className="btn-secondary-large">
-                                    Login
-                                </Link>
-                            )}
                         </div>
                     </div>
                 </div>
             </header>
 
-
-            <section className="features-section">
+            <section id="services" className="services-section">
                 <div className="section-header">
-                    <h2>Why Choose Titan Strength?</h2>
-                    <div className="underline"></div>
+                    <h4>OUR SERVICE</h4>
+                    <h2>Unlock Your Best Self with Our Full Range of Fitness Services</h2>
                 </div>
 
-                <div className="features-grid">
-                    <div className="feature-card">
-                        <div className="icon-box">🏋️</div>
-                        <h3>Custom Workouts</h3>
-                        <p>Tailored exercise plans designed by expert trainers to match your fitness level and goals.</p>
+                <div className="services-grid">
+                    <div className="service-card" style={{ backgroundImage: "url('/assets/StrengthCardio.png')" }}>
+                        <div className="service-overlay">
+                            <h3>Strength and Cardio</h3>
+                        </div>
                     </div>
-
-                    <div className="feature-card">
-                        <div className="icon-box">🥗</div>
-                        <h3>Smart Nutrition</h3>
-                        <p>Track your macros and get personalized diet plans to fuel your body for peak performance.</p>
+                    <div className="service-card" style={{ backgroundImage: "url('/assets/1on1_PT.png')" }}>
+                        <div className="service-overlay">
+                            <h3>1-on-1 PT</h3>
+                        </div>
                     </div>
-
-                    <div className="feature-card">
-                        <div className="icon-box">📊</div>
-                        <h3>Progress Tracking</h3>
-                        <p>Visualize your gains with advanced analytics. See how far you've come and where you're going.</p>
+                    <div className="service-card" style={{ backgroundImage: "url('/assets/GroupFitness.png')" }}>
+                        <div className="service-overlay">
+                            <h3>Group Fitness Classes</h3>
+                        </div>
+                    </div>
+                    <div className="service-card" style={{ backgroundImage: "url('/assets/NutritionDiet.png')" }}>
+                        <div className="service-overlay">
+                            <h3>Nutrition and Diet Consultation</h3>
+                        </div>
+                    </div>
+                    <div className="service-card" style={{ backgroundImage: "url('/assets/RecoveryWellness.png')" }}>
+                        <div className="service-overlay">
+                            <h3>Recovery and Wellness</h3>
+                        </div>
+                    </div>
+                    <div className="service-card" style={{ backgroundImage: "url('/assets/HybridCoaching.png')" }}>
+                        <div className="service-overlay">
+                            <h3>Online Hybrid Coaching</h3>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section className="cta-section">
-                <h2>Ready to Transform?</h2>
-                <p>Join thousands of Titans building their dream physique today.</p>
-                <Link to="/signup" className="btn-white-large">
-                    Join Now - It's Free
-                </Link>
+            <section id="about" className="about-section">
+                <div className="about-container">
+                    <div className="about-content">
+                        <h4>ABOUT US</h4>
+                        <h2>Fitness with Purpose Results with Support</h2>
+                        <p>
+                            We provide a holistic approach to fitness that combines physical training, nutritional guidance, and mental resilience.
+                            Join a community dedicated to pushing boundaries.
+                        </p>
+                        <div className="about-stats">
+                            <div className="stat-item">
+                                <span className="stat-number">30</span>
+                                <span className="stat-label">Pro<br />Trainers</span>
+                            </div>
+                            <div className="stat-item">
+                                <span className="stat-number">30k</span>
+                                <span className="stat-label">Member<br />Happy</span>
+                            </div>
+                            <div className="stat-item">
+                                <span className="stat-number">10</span>
+                                <span className="stat-label">Years<br />Experience</span>
+                            </div>
+                            <div className="stat-item">
+                                <span className="stat-number">5</span>
+                                <span className="stat-label">Best<br />Awards</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="about-video-container">
+                        <video autoPlay loop muted playsInline className="about-video-content">
+                            <source src="/assets/GymIntro.mp4" type="video/mp4"></source>
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
             </section>
 
-            <footer className="landing-footer">
-                <p>&copy; {new Date().getFullYear()} Titan Strength. All rights reserved.</p>
-                <div className="social-links">
-                    <span>Instagram</span>
-                    <span>Twitter</span>
-                    <span>Facebook</span>
+            <section id="plans" className="pricing-section">
+                <div className="section-header">
+                    <h4>PRICING</h4>
+                    <h2>Flexible Plans For Every Goal</h2>
+                </div>
+                <div className="pricing-grid">
+                    <div className="pricing-card">
+                        <h3>Basic Plan</h3>
+                        <div className="price">$29<span>/mo</span></div>
+                        <ul className="features-list">
+                            <li>Access to Gym Equipment</li>
+                            <li>Locker Access</li>
+                            <li>Free Wifi</li>
+                            <li className="disabled">Personal Trainer</li>
+                            <li className="disabled">Diet Plan</li>
+                        </ul>
+                        <button className="btn-secondary-large full-width">Choose Plan</button>
+                    </div>
+                    <div className="pricing-card highlight">
+                        <div className="tag">Best Offer</div>
+                        <h3>Standard Plan</h3>
+                        <div className="price">$49<span>/mo</span></div>
+                        <ul className="features-list">
+                            <li>Access to Gym Equipment</li>
+                            <li>Locker Access</li>
+                            <li>Free Wifi</li>
+                            <li>1 Personal Session/mo</li>
+                            <li>Basic Diet Plan</li>
+                        </ul>
+                        <button className="btn-white-large full-width">Choose Plan</button>
+                    </div>
+                    <div className="pricing-card">
+                        <h3>Premium Plan</h3>
+                        <div className="price">$89<span>/mo</span></div>
+                        <ul className="features-list">
+                            <li>Access to Gym Equipment</li>
+                            <li>Locker Access</li>
+                            <li>Free Wifi</li>
+                            <li>Unlimited Personal Training</li>
+                            <li>Advanced Nutrition Plan</li>
+                        </ul>
+                        <button className="btn-secondary-large full-width">Choose Plan</button>
+                    </div>
+                </div>
+            </section>
+
+            <footer id="contact" className="landing-footer">
+                <div className="footer-content">
+                    <div className="footer-logo">
+                        <h2>Titan<span className="text-highlight">Strength</span></h2>
+                        <p>The Gym Next Door — With Results That Go the Distance</p>
+                    </div>
+
+                    <div className="footer-action">
+                        <a
+                            href="https://mail.google.com/mail/?view=cm&fs=1&to=dikshantahalawat8@gmail.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-primary-large"
+                        >
+                            Contact Us Via Email
+                        </a>
+                    </div>
+                </div>
+                <div className="footer-bottom">
+                    <p>&copy; {new Date().getFullYear()} Titan Strength. All rights reserved.</p>
                 </div>
             </footer>
         </div>

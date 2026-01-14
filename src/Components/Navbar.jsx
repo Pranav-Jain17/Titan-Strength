@@ -1,5 +1,5 @@
 import { useState, useContext, useRef, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext.jsx';
 import { toast } from 'react-toastify';
 import DashboardModals from './DashboardModals.jsx';
@@ -8,6 +8,7 @@ import '../Styles/navbar.css';
 const Navbar = () => {
     const { userData, logout } = useContext(AuthContext);
     const navigate = useNavigate();
+    const location = useLocation();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null);
@@ -37,6 +38,20 @@ const Navbar = () => {
     const handleModalOpen = (type) => {
         setActiveModal(type);
         setIsProfileDropdownOpen(false);
+        closeMenu();
+    };
+
+    const scrollToSection = (id) => {
+        if (location.pathname !== '/') {
+            navigate('/');
+            setTimeout(() => {
+                const element = document.getElementById(id);
+                if (element) element.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        } else {
+            const element = document.getElementById(id);
+            if (element) element.scrollIntoView({ behavior: 'smooth' });
+        }
         closeMenu();
     };
 
@@ -122,7 +137,11 @@ const Navbar = () => {
                             </>
                         ) : (
                             <>
-                                <NavLink to="/" onClick={closeMenu} className="nav-link">Home</NavLink>
+                                <span onClick={() => scrollToSection('home')} className="nav-link cursor-pointer">Home</span>
+                                <span onClick={() => scrollToSection('services')} className="nav-link cursor-pointer">Services</span>
+                                <span onClick={() => scrollToSection('about')} className="nav-link cursor-pointer">About Us</span>
+                                <span onClick={() => scrollToSection('plans')} className="nav-link cursor-pointer">Plans</span>
+                                <span onClick={() => scrollToSection('contact')} className="nav-link cursor-pointer">Contact Us</span>
                                 <NavLink to="/login" onClick={closeMenu} className="login-btn-nav">Login</NavLink>
                                 <NavLink to="/signup" onClick={closeMenu} className="signup-btn-nav">Sign Up</NavLink>
                             </>

@@ -52,7 +52,7 @@ const UpdatePassword = ({ onClose }) => {
                 return;
             }
 
-            const response = await fetch(`${backendUrl}/api/v1/auth/updatepassword`, {
+            const response = await fetch(`${backendUrl}/api/v1/auth/update-password`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
