@@ -4,12 +4,19 @@ import { AuthContext } from '../Context/AuthContext.jsx';
 import '../Styles/landingPage.css';
 
 const LandingPage = () => {
-    const { isLoggedin, userData } = useContext(AuthContext);
+    const { isLoggedin, userData, loading } = useContext(AuthContext);
+
+    if (loading) {
+        return <div className="landing-page" style={{ minHeight: '100vh', backgroundColor: 'var(--dark-bg)' }}></div>;
+    }
+
+    const isAuthenticated = isLoggedin || (userData && Object.keys(userData).length > 0);
+
     const getDashboardLink = () => {
-        if (!userData) return "/signup";
-        if (userData.role === 'admin') return "/admin/dashboard";
-        if (userData.role === 'trainer') return "/trainer/dashboard";
-        return "/user/dashboard";
+        if (!isAuthenticated || !userData) return "/signup";
+
+        const role = userData.role || 'user';
+        return `/${role}/dashboard`;
     };
 
     return (
@@ -28,9 +35,9 @@ const LandingPage = () => {
 
                         <div className="hero-buttons">
                             <Link to={getDashboardLink()} className="btn-primary-large">
-                                {isLoggedin ? "Go to Dashboard" : "Start Your Journey"}
+                                {isAuthenticated ? "Go to Dashboard" : "Start Your Journey"}
                             </Link>
-                            {!isLoggedin && (
+                            {!isAuthenticated && (
                                 <Link to="/login" className="btn-secondary-large">
                                     Login
                                 </Link>
@@ -67,16 +74,6 @@ const LandingPage = () => {
                     </div>
                 </div>
             </section>
-
-            {/* <section className="mission-section">
-                <div className="mission-content">
-                    <h2>Forged in Sweat. Built for Glory.</h2>
-                    <p>
-                        Titan Strength isn't just an app; it's a discipline. Whether you are an elite athlete
-                        or just starting your journey, our platform provides the tools you need to break barriers.
-                    </p>
-                </div>
-            </section> */}
 
             <section className="cta-section">
                 <h2>Ready to Transform?</h2>
