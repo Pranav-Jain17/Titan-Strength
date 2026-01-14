@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import './Styles/login.css';
+import { AuthContext } from '../../Context/AuthContext';
+import '../../Styles/login.css';
 
 const ForgotPassword = () => {
+    const { backendUrl } = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -11,7 +13,7 @@ const ForgotPassword = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await fetch('https://titan-strength.me/api/v1/auth/forgot-password', {
+            const response = await fetch(`${backendUrl}/api/v1/auth/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -57,10 +59,7 @@ const ForgotPassword = () => {
                     </button>
 
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                        <Link
-                            to="/login"
-                            className="link-text bold"
-                        >
+                        <Link to="/login" className="link-text bold">
                             Back to Login
                         </Link>
                     </div>

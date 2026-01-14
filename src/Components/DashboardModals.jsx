@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import UpdatePassword from './UpdatePassword';
-import './Styles/homeModals.css';
+import UpdatePassword from '../Pages/auth/UpdatePassword.jsx';
+import '../Styles/dashboardModals.css';
 
-function HomeModals({ type, onClose, user, actions }) {
-    const [inputValue, setInputValue] = useState("");
+function DashboardModals({ type, onClose, user }) {
     const [settingsTab, setSettingsTab] = useState('general');
     const [showPasswordForm, setShowPasswordForm] = useState(false);
 
     useEffect(() => {
         if (type) {
-            setInputValue("");
             setSettingsTab('general');
             setShowPasswordForm(false);
         }
@@ -23,62 +20,14 @@ function HomeModals({ type, onClose, user, actions }) {
 
     if (!type) return null;
 
-    const handleSubmit = () => {
-        if (type === 'create') {
-            if (!inputValue) return toast.error("Meet Title is required!");
-            actions.create(inputValue);
-        } else if (type === 'join') {
-            if (!inputValue) return toast.error("Room ID is required.");
-            actions.join(inputValue);
-        }
-    };
-
     const renderContent = () => {
         switch (type) {
-            case "create":
-                return (
-                    <>
-                        <h2>New Meeting</h2>
-                        <div className="input-group-modern">
-                            <label>Meeting Title</label>
-                            <input
-                                autoFocus
-                                type="text"
-                                value={inputValue}
-                                onChange={(e) => setInputValue(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                                placeholder="e.g. Daily Standup"
-                            />
-                        </div>
-                    </>
-                );
-            case "join":
-                return (
-                    <>
-                        <h2>Join Meeting</h2>
-                        <div className="input-group-modern">
-                            <label>Room ID</label>
-                            <input
-                                autoFocus
-                                type="text"
-                                inputMode="numeric"
-                                value={inputValue}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    if (val === "" || /^[0-9]+$/.test(val)) setInputValue(val);
-                                }}
-                                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                                placeholder="e.g. 123456"
-                            />
-                        </div>
-                    </>
-                );
             case "profile":
                 return (
                     <div className="profile-modal-content">
                         <div className="profile-header">
                             <div className="profile-avatar-large">
-                                <img src="/assets/svg/profile.svg" alt="Avatar" />
+                                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                             </div>
                             <h3>{user.name}</h3>
                             <p>{user.role || 'Member'}</p>
@@ -123,7 +72,7 @@ function HomeModals({ type, onClose, user, actions }) {
                                     <div className="setting-item">
                                         <div className="setting-info">
                                             <span>General Settings</span>
-                                            <small>Coming soon...</small>
+                                            <small>Preferences coming soon...</small>
                                         </div>
                                     </div>
                                 </div>
@@ -177,15 +126,6 @@ function HomeModals({ type, onClose, user, actions }) {
             <div className="modal-box">
                 {renderContent()}
 
-                {(type === 'create' || type === 'join') && (
-                    <div className="modal-footer">
-                        <button className="btn-cancel" onClick={onClose}>Cancel</button>
-                        <button className="btn-primary" onClick={handleSubmit}>
-                            {type === 'create' ? 'Create' : 'Join'}
-                        </button>
-                    </div>
-                )}
-
                 {type === 'profile' && (
                     <div className="modal-footer">
                         <button className="btn-primary full-width" onClick={onClose}>Close</button>
@@ -202,4 +142,4 @@ function HomeModals({ type, onClose, user, actions }) {
     );
 }
 
-export default HomeModals;
+export default DashboardModals;

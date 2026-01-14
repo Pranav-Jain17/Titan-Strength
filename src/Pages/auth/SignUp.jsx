@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import './Styles/login.css';
+import { AuthContext } from '../../Context/AuthContext';
+import '../../Styles/signUp.css';
 
-const Login = () => {
+const Signup = () => {
+    const { backendUrl } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -15,46 +19,48 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('https://titan-strength.me/api/v1/auth/login', {
+            const response = await fetch(`${backendUrl}/api/v1/auth/register`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: username, email, password }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                localStorage.setItem('loginToken', data.token);
-
-                if (data.user) {
-                    localStorage.setItem('userId', data.user.id);
-                    localStorage.setItem('userName', data.user.name);
-                    localStorage.setItem('userEmail', data.user.email);
-                    localStorage.setItem('userRole', data.user.role);
-                }
-
-                toast.success("Login successful !");
-                navigate('/home');
+                toast.success(data.message || "Registration successful! Please check your email.");
+                navigate('/login');
             } else {
-                toast.error(data.message || "Invalid credentials");
+                toast.error(data.message || "Registration failed. Please try again.");
             }
         } catch (error) {
             console.error(error);
-            toast.error("Something went wrong. Please try again.");
+            toast.error("Something went wrong. Please check your connection.");
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="login-page">
-            <div className="login-card">
-                <h2>Welcome Back</h2>
-                <p className="subtitle">Please enter your details to sign in</p>
+        <div className="signup-page">
+            <div className="signup-card">
+                <h2>Create Account</h2>
+                <p className="subtitle">Join us and start your journey</p>
 
                 <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            placeholder="Choose a username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            disabled={isLoading}
+                        />
+                    </div>
+
                     <div className="form-group">
                         <label htmlFor="email">Email Address</label>
                         <input
@@ -65,7 +71,6 @@ const Login = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             disabled={isLoading}
-                            autoComplete='email'
                         />
                     </div>
 
@@ -75,51 +80,35 @@ const Login = () => {
                             <input
                                 type={showPassword ? "text" : "password"}
                                 id="password"
-                                placeholder="Enter your password"
+                                placeholder="Create a password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                                 disabled={isLoading}
                                 className="password-input"
-                                autoComplete='password'
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="password-toggle-btn"
                             >
-                                {showPassword ? (
-                                    <img src="/assets/svg/hidePswd.svg" alt="Hide Password" width="20" height="20" />
-                                ) : (
-                                    <img src="/assets/svg/showPswd.svg" alt="Show Password" width="20" height="20" />
-                                )}
+                                <img src={showPassword ? "/assets/svg/hidePswd.svg" : "/assets/svg/showPswd.svg"} alt="Toggle" width="20" />
                             </button>
                         </div>
                     </div>
 
-                    <div className="forgot-password-container">
-                        <Link
-                            to="/forgot-password"
-                            className="link-text"
-                        >
-                            Forgot Password?
-                        </Link>
-                    </div>
-
-                    <button type="submit" className="login-submit-btn" disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
-                        {isLoading ? 'Signing In...' : 'Sign In'}
+                    <button type="submit" className="signup-submit-btn" disabled={isLoading}>
+                        {isLoading ? 'Creating Account...' : 'Sign Up'}
                     </button>
                 </form>
 
                 <div className="signup-footer">
-                    <span className="text-muted">Don't have an account? </span>
-                    <Link to="/signup" className="link-text bold">
-                        Sign up
-                    </Link>
+                    <span className="text-muted">Already have an account? </span>
+                    <Link to="/login" className="bold">Log In</Link>
                 </div>
             </div>
         </div>
     );
 };
 
-export default Login;
+export default Signup;

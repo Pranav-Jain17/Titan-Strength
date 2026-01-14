@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import './Styles/login.css';
+import { AuthContext } from '../../Context/AuthContext';
+import '../../Styles/login.css';
 
 const ResetPassword = () => {
+    const { backendUrl } = useContext(AuthContext);
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = searchParams.get('token');
@@ -19,9 +21,7 @@ const ResetPassword = () => {
             <div className="login-page">
                 <div className="login-card" style={{ textAlign: 'center' }}>
                     <h2 style={{ color: '#e63946' }}>Invalid Link</h2>
-                    <p className="subtitle">
-                        This password reset link is invalid or has expired.
-                    </p>
+                    <p className="subtitle">This password reset link is invalid or has expired.</p>
                     <button
                         className="login-submit-btn"
                         onClick={() => navigate('/login')}
@@ -50,21 +50,11 @@ const ResetPassword = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch(`https://titan-strength.me/api/v1/auth/reset-password/${token}`, {
+            const response = await fetch(`${backendUrl}/api/v1/auth/reset-password/${token}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    newPassword: password,
-                    confirmPassword
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newPassword: password, confirmPassword })
             });
-
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("Server returned a non-JSON response. Check your API URL and Method.");
-            }
 
             const data = await response.json();
 
@@ -72,7 +62,7 @@ const ResetPassword = () => {
                 toast.success("Password reset successful! Please login.");
                 navigate('/login');
             } else {
-                toast.error(data.message || data.error || "Failed to reset password.");
+                toast.error(data.message || "Failed to reset password.");
             }
         } catch (error) {
             console.error("Reset Password Error:", error);
@@ -89,12 +79,7 @@ const ResetPassword = () => {
                 <p className="subtitle">Please create a new, strong password.</p>
 
                 <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="username"
-                        autoComplete="username"
-                        style={{ display: 'none' }}
-                    />
+                    <input type="text" name="username" autoComplete="username" style={{ display: 'none' }} />
 
                     <div className="form-group">
                         <label htmlFor="new-password">New Password</label>
@@ -115,11 +100,7 @@ const ResetPassword = () => {
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="password-toggle-btn"
                             >
-                                {showPassword ? (
-                                    <img src="/assets/svg/hidePswd.svg" alt="Hide Password" width="20" height="20" />
-                                ) : (
-                                    <img src="/assets/svg/showPswd.svg" alt="Show Password" width="20" height="20" />
-                                )}
+                                <img src={showPassword ? "/assets/svg/hidePswd.svg" : "/assets/svg/showPswd.svg"} alt="Toggle" width="20" />
                             </button>
                         </div>
                     </div>
@@ -143,21 +124,12 @@ const ResetPassword = () => {
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                 className="password-toggle-btn"
                             >
-                                {showConfirmPassword ? (
-                                    <img src="/assets/svg/hidePswd.svg" alt="Hide Password" width="20" height="20" />
-                                ) : (
-                                    <img src="/assets/svg/showPswd.svg" alt="Show Password" width="20" height="20" />
-                                )}
+                                <img src={showConfirmPassword ? "/assets/svg/hidePswd.svg" : "/assets/svg/showPswd.svg"} alt="Toggle" width="20" />
                             </button>
                         </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        className="login-submit-btn"
-                        disabled={isLoading}
-                        style={{ opacity: isLoading ? 0.7 : 1, marginTop: '10px' }}
-                    >
+                    <button type="submit" className="login-submit-btn" disabled={isLoading}>
                         {isLoading ? 'Resetting...' : 'Reset Password'}
                     </button>
                 </form>

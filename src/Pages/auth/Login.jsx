@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import './Styles/signUp.css';
+import { useAuth } from '../../Context/AuthContext.jsx';
+import '../../Styles/login.css';
 
-const Signup = () => {
+const Login = () => {
     const navigate = useNavigate();
-    const [username, setUsername] = useState('');
+    const { login: contextLogin } = useAuth();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -16,54 +18,67 @@ const Signup = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('https://titan-strength.me/api/v1/auth/register', {
+            const response = await fetch('https://titan-strength.me/api/v1/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    name: username,
-                    email,
-                    password
-                }),
+                body: JSON.stringify({ email, password }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                toast.success(data.data || "Registration successful! Please check your email.");
-                navigate('/login');
+                const userData = {
+                    token: data.token,
+                    id: data.user.id,
+                    name: data.user.name,
+                    email: data.user.email,
+                    role: data.user.role
+                };
+
+                contextLogin(userData);
+
+                toast.success("Login successful!");
+
+                switch (data.user.role) {
+                    case 'owner':
+                        navigate('/owner/dashboard');
+                        break;
+                    case 'manager':
+                        navigate('/manager/dashboard');
+                        break;
+                    case 'trainer':
+                        navigate('/trainer/dashboard');
+                        break;
+                    case 'member':
+                        navigate('/member/dashboard');
+                        break;
+                    case 'user':
+                        navigate('/user/dashboard');
+                        break;
+                    default:
+                        navigate('/');
+                }
+
             } else {
-                toast.error(data.message || "Registration failed. Please try again.");
+                toast.error(data.message || "Invalid credentials");
             }
         } catch (error) {
             console.error(error);
-            toast.error("Something went wrong. Please check your connection.");
+            toast.error("Something went wrong. Please try again.");
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="signup-page">
-            <div className="signup-card">
-                <h2>Create Account</h2>
-                <p className="subtitle">Join us and start your journey</p>
+        <div className="login-page">
+            <div className="login-card">
+                <h2>Welcome Back</h2>
+                <p className="subtitle">Please enter your details to sign in</p>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="username">Username</label>
-                        <input
-                            type="text"
-                            id="username"
-                            placeholder="Choose a username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                            disabled={isLoading}
-                        />
-                    </div>
-
                     <div className="form-group">
                         <label htmlFor="email">Email Address</label>
                         <input
@@ -74,6 +89,7 @@ const Signup = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             required
                             disabled={isLoading}
+                            autoComplete='email'
                         />
                     </div>
 
@@ -83,12 +99,13 @@ const Signup = () => {
                             <input
                                 type={showPassword ? "text" : "password"}
                                 id="password"
-                                placeholder="Create a password"
+                                placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                                 disabled={isLoading}
                                 className="password-input"
+                                autoComplete='password'
                             />
                             <button
                                 type="button"
@@ -104,19 +121,24 @@ const Signup = () => {
                         </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        className="signup-submit-btn"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Creating Account...' : 'Sign Up'}
+                    <div className="forgot-password-container">
+                        <Link
+                            to="/forgot-password"
+                            className="link-text"
+                        >
+                            Forgot Password?
+                        </Link>
+                    </div>
+
+                    <button type="submit" className="login-submit-btn" disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
+                        {isLoading ? 'Signing In...' : 'Sign In'}
                     </button>
                 </form>
 
                 <div className="signup-footer">
-                    <span className="text-muted">Already have an account? </span>
-                    <Link to="/login" className="bold">
-                        Log In
+                    <span className="text-muted">Don't have an account? </span>
+                    <Link to="/signup" className="link-text bold">
+                        Sign up
                     </Link>
                 </div>
             </div>
@@ -124,4 +146,4 @@ const Signup = () => {
     );
 };
 
-export default Signup;
+export default Login;

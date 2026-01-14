@@ -1,7 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../../Context/AuthContext.jsx';
 
 const UpdatePassword = ({ onClose }) => {
+    const { backendUrl } = useContext(AuthContext);
+
     const [formData, setFormData] = useState({
         currentPassword: '',
         newPassword: '',
@@ -26,7 +29,6 @@ const UpdatePassword = ({ onClose }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const { currentPassword, newPassword, confirmPassword } = formData;
 
         if (!currentPassword || !newPassword || !confirmPassword) {
@@ -42,24 +44,20 @@ const UpdatePassword = ({ onClose }) => {
         setIsLoading(true);
         try {
             const token = localStorage.getItem('loginToken');
-            const response = await fetch('https://titan-strength.me/api/v1/auth/update-password', {
+            const response = await fetch(`${backendUrl}/api/v1/auth/update-password`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({
-                    currentPassword,
-                    newPassword,
-                    confirmPassword
-                }),
+                body: JSON.stringify({ currentPassword, newPassword, confirmPassword }),
             });
 
             const data = await response.json();
 
             if (data.success) {
-                toast.success(data.data || "Password updated successfully");
-                onClose();
+                toast.success(data.message || "Password updated successfully");
+                if (onClose) onClose();
             } else {
                 toast.error(data.message || "Failed to update password");
             }
@@ -90,11 +88,7 @@ const UpdatePassword = ({ onClose }) => {
                     onClick={() => toggleShow(showKey)}
                     className="password-toggle-btn"
                 >
-                    {showPass[showKey] ? (
-                        <img src="/assets/svg/hidePswd.svg" alt="Hide" width="20" />
-                    ) : (
-                        <img src="/assets/svg/showPswd.svg" alt="Show" width="20" />
-                    )}
+                    <img src={showPass[showKey] ? "/assets/svg/hidePswd.svg" : "/assets/svg/showPswd.svg"} alt="Toggle" width="20" />
                 </button>
             </div>
         </div>
@@ -102,32 +96,14 @@ const UpdatePassword = ({ onClose }) => {
 
     return (
         <form className="settings-list fade-in" onSubmit={handleSubmit}>
-            <input
-                type="text"
-                name="username"
-                autoComplete="username"
-                style={{ display: 'none' }}
-            />
+            <input type="text" name="username" autoComplete="username" style={{ display: 'none' }} />
 
-            <h3>Change Password</h3>
             {renderPasswordInput('currentPassword', 'Current Password', 'current', 'current-password')}
             {renderPasswordInput('newPassword', 'New Password', 'new', 'new-password')}
             {renderPasswordInput('confirmPassword', 'Confirm Password', 'confirm', 'new-password')}
 
             <div className="modal-footer" style={{ marginTop: '20px' }}>
-                <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={onClose}
-                    disabled={isLoading}
-                >
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    className="btn-primary"
-                    disabled={isLoading}
-                >
+                <button type="submit" className="btn-primary full-width" disabled={isLoading}>
                     {isLoading ? 'Updating...' : 'Update Password'}
                 </button>
             </div>
