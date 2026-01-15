@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
 
 import Navbar from './Components/Navbar';
 import ProtectedRoute from './Components/ProtectedRoute';
@@ -11,7 +12,7 @@ import ForgotPassword from '../src/Pages/auth/ForgotPassword.jsx';
 import ResetPassword from '../src/Pages/auth/ResetPassword.jsx';
 import Unauthorized from '../src/Pages/auth/Unauthorized.jsx';
 import ManagerDashboard from '../src/Pages/dashboards/ManagerDashboard.jsx';
-import OwnerDashboard from '../src/Pages/dashboards/OwnerDashboard.jsx';
+import OwnerDashboard from './Pages/dashboards/Owner/OwnerDashboard.jsx';
 import TrainerDashboard from '../src/Pages/dashboards/TrainerDashboard.jsx';
 import MemberDashboard from '../src/Pages/dashboards/MemberDashboard.jsx';
 import UserDashboard from '../src/Pages/dashboards/UserDashboard.jsx';

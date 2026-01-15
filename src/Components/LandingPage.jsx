@@ -1,10 +1,31 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../Context/AuthContext.jsx';
 import '../Styles/landingPage.css';
 
 const LandingPage = () => {
     const { isLoggedin, userData, loading } = useContext(AuthContext);
+    const [plans, setPlans] = useState([]);
+    const [plansLoading, setPlansLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchPlans = async () => {
+            try {
+                const response = await fetch('https://titan-strength.me/api/v1/plans');
+                const data = await response.json();
+                if (data.success) {
+                    setPlans(data.data);
+                }
+                console.log(data);
+            } catch (error) {
+                console.error("Failed to load plans");
+            } finally {
+                setPlansLoading(false);
+            }
+        };
+
+        fetchPlans();
+    }, []);
 
     if (loading) {
         return <div className="landing-page" style={{ minHeight: '100vh', backgroundColor: 'var(--dark-bg)' }}></div>;
@@ -125,43 +146,38 @@ const LandingPage = () => {
                     <h2>Flexible Plans For Every Goal</h2>
                 </div>
                 <div className="pricing-grid">
-                    <div className="pricing-card">
-                        <h3>Basic Plan</h3>
-                        <div className="price">$29<span>/mo</span></div>
-                        <ul className="features-list">
-                            <li>Access to Gym Equipment</li>
-                            <li>Locker Access</li>
-                            <li>Free Wifi</li>
-                            <li className="disabled">Personal Trainer</li>
-                            <li className="disabled">Diet Plan</li>
-                        </ul>
-                        <button className="btn-secondary-large full-width">Choose Plan</button>
-                    </div>
-                    <div className="pricing-card highlight">
-                        <div className="tag">Best Offer</div>
-                        <h3>Standard Plan</h3>
-                        <div className="price">$49<span>/mo</span></div>
-                        <ul className="features-list">
-                            <li>Access to Gym Equipment</li>
-                            <li>Locker Access</li>
-                            <li>Free Wifi</li>
-                            <li>1 Personal Session/mo</li>
-                            <li>Basic Diet Plan</li>
-                        </ul>
-                        <button className="btn-white-large full-width">Choose Plan</button>
-                    </div>
-                    <div className="pricing-card">
-                        <h3>Premium Plan</h3>
-                        <div className="price">$89<span>/mo</span></div>
-                        <ul className="features-list">
-                            <li>Access to Gym Equipment</li>
-                            <li>Locker Access</li>
-                            <li>Free Wifi</li>
-                            <li>Unlimited Personal Training</li>
-                            <li>Advanced Nutrition Plan</li>
-                        </ul>
-                        <button className="btn-secondary-large full-width">Choose Plan</button>
-                    </div>
+                    {plansLoading ? (
+                        <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#888' }}>Loading plans...</p>
+                    ) : (
+                        plans.map((plan) => (
+                            <div
+                                key={plan._id}
+                                className={`pricing-card ${plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('gold') ? 'highlight' : ''}`}
+                            >
+                                {(plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('gold')) && (
+                                    <div className="tag">Best Offer</div>
+                                )}
+                                <h3>{plan.name}</h3>
+                                <div className="price">${plan.price}<span>/mo</span></div>
+                                <ul className="features-list">
+                                    <li>Access to Gym Equipment</li>
+                                    <li>Locker Access</li>
+                                    <li>Free Wifi</li>
+                                    {plan.features?.includesPersonalTraining
+                                        ? <li>Unlimited Personal Training</li>
+                                        : <li className="disabled">Personal Trainer</li>
+                                    }
+                                    {plan.features?.canBookClasses
+                                        ? <li>Up to {plan.features.maxClassesPerWeek} Classes/Week</li>
+                                        : <li className="disabled">Group Classes</li>
+                                    }
+                                </ul>
+                                <button className={plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('gold') ? "btn-white-large full-width" : "btn-secondary-large full-width"}>
+                                    Choose Plan
+                                </button>
+                            </div>
+                        ))
+                    )}
                 </div>
             </section>
 

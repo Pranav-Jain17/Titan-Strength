@@ -16,13 +16,69 @@ const Login = () => {
     useEffect(() => {
         if (isLoggedin && user) {
             const role = user.role || 'member';
-            navigate(`/${role}/dashboard`, { replace: true });
+            // navigate(`/${role}/dashboard`, { replace: true })
+            navigate('/', { replace: true });;
         }
     }, [isLoggedin, user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+
+        //     try {
+        //         const response = await fetch('https://titan-strength.me/api/v1/auth/login', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //             },
+        //             body: JSON.stringify({ email, password }),
+        //         });
+
+        //         const data = await response.json();
+
+        //         if (data.success) {
+        //             const userData = {
+        //                 token: data.token,
+        //                 id: data.user.id,
+        //                 name: data.user.name,
+        //                 email: data.user.email,
+        //                 role: data.user.role
+        //             };
+
+        //             contextLogin(userData);
+
+        //             toast.success("Login successful!");
+
+        //             switch (data.user.role) {
+        //                 case 'owner':
+        //                     navigate('/owner/dashboard', { replace: true });
+        //                     break;
+        //                 case 'manager':
+        //                     navigate('/manager/dashboard', { replace: true });
+        //                     break;
+        //                 case 'trainer':
+        //                     navigate('/trainer/dashboard', { replace: true });
+        //                     break;
+        //                 case 'member':
+        //                     navigate('/member/dashboard', { replace: true });
+        //                     break;
+        //                 case 'user':
+        //                     navigate('/user/dashboard', { replace: true });
+        //                     break;
+        //                 default:
+        //                     navigate('/');
+        //             }
+
+        //         } else {
+        //             toast.error(data.message || "Invalid credentials");
+        //         }
+        //     } catch (error) {
+        //         console.error(error);
+        //         toast.error("Something went wrong. Please try again.");
+        //     } finally {
+        //         setIsLoading(false);
+        //     }
+        // };
 
         try {
             const response = await fetch('https://titan-strength.me/api/v1/auth/login', {
@@ -47,26 +103,7 @@ const Login = () => {
                 contextLogin(userData);
 
                 toast.success("Login successful!");
-
-                switch (data.user.role) {
-                    case 'owner':
-                        navigate('/owner/dashboard', { replace: true });
-                        break;
-                    case 'manager':
-                        navigate('/manager/dashboard', { replace: true });
-                        break;
-                    case 'trainer':
-                        navigate('/trainer/dashboard', { replace: true });
-                        break;
-                    case 'member':
-                        navigate('/member/dashboard', { replace: true });
-                        break;
-                    case 'user':
-                        navigate('/user/dashboard', { replace: true });
-                        break;
-                    default:
-                        navigate('/');
-                }
+                navigate('/', { replace: true });
 
             } else {
                 toast.error(data.message || "Invalid credentials");

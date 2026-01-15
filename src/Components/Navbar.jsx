@@ -63,26 +63,77 @@ const Navbar = () => {
             <NavLink key="home" to="/" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Home</NavLink>,
         ];
 
-        if (role === 'admin') {
+        // if (role === 'owner') {
+        //     return [
+        //         ...commonLinks,
+        //         <NavLink key="dash" to="/owner/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>,
+        //         <NavLink key="branches" to="/owner/branches" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Branches</NavLink>,
+        //         <NavLink key="staff" to="/owner/staff" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Staff</NavLink>,
+        //         <NavLink key="plans" to="/owner/plans" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Plans</NavLink>,
+        //         <NavLink key="finances" to="/owner/finances" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Finances</NavLink>,
+        //         <NavLink key="inventory" to="/owner/inventory" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Inventory</NavLink>
+        //     ];
+        // } else if (role === 'manager') {
+        //     return [
+        //         ...commonLinks,
+        //         <NavLink key="dash" to="/manager/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>,
+        //         <NavLink key="members" to="/manager/members" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Members</NavLink>,
+        //         <NavLink key="staff" to="/manager/staff" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Staff</NavLink>,
+        //         <NavLink key="equipment" to="/manager/equipment" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Equipment</NavLink>,
+        //         <NavLink key="reports" to="/manager/reports" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Reports</NavLink>
+        //     ];
+        // } else if (role === 'trainer') {
+        //     return [
+        //         ...commonLinks,
+        //         <NavLink key="dash" to="/trainer/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>,
+        //         <NavLink key="clients" to="/trainer/clients" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Clients</NavLink>,
+        //         <NavLink key="workouts" to="/trainer/workouts" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Workouts</NavLink>,
+        //         <NavLink key="diets" to="/trainer/diets" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Diets</NavLink>,
+        //         <NavLink key="schedule" to="/trainer/schedule" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Schedule</NavLink>
+        //     ];
+        // } else if (role === 'member') {
+        //     return [
+        //         ...commonLinks,
+        //         <NavLink key="dash" to="/member/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>,
+        //         <NavLink key="workout" to="/member/workout" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>My Workout</NavLink>,
+        //         <NavLink key="diet" to="/member/diet" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>My Diet</NavLink>,
+        //         <NavLink key="schedule" to="/member/schedule" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Schedule</NavLink>,
+        //         <NavLink key="progress" to="/member/progress" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Progress</NavLink>
+        //     ];
+        // } else {
+        //     return [
+        //         ...commonLinks,
+        //         <NavLink key="dash" to="/user/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>,
+        //         <NavLink key="join" to="/user/join" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Join Now</NavLink>,
+        //         <NavLink key="profile" to="/user/profile" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Profile</NavLink>
+        //     ];
+        // }
+
+        if (role === 'owner') {
             return [
                 ...commonLinks,
-                <NavLink key="dash" to="/admin/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>,
-                <NavLink key="users" to="/admin/all-users" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Users</NavLink>,
-                <NavLink key="trainers" to="/admin/all-trainers" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Trainers</NavLink>
+                <NavLink key="dash" to="/owner/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>
+            ];
+        } else if (role === 'manager') {
+            return [
+                ...commonLinks,
+                <NavLink key="dash" to="/manager/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>
             ];
         } else if (role === 'trainer') {
             return [
                 ...commonLinks,
-                <NavLink key="dash" to="/trainer/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>,
-                <NavLink key="trainees" to="/trainer/trainees" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>My Trainees</NavLink>,
-                <NavLink key="schedule" to="/trainer/schedule" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Schedule</NavLink>
+                <NavLink key="dash" to="/trainer/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>
             ];
-        } else {
+        } else if (role === 'member') {
             return [
                 ...commonLinks,
-                <NavLink key="dash" to="/user/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>,
-                <NavLink key="workouts" to="/user/workouts" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Workouts</NavLink>,
-                <NavLink key="diet" to="/user/diet" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Diet</NavLink>
+                <NavLink key="dash" to="/member/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>
+            ];
+        } else {
+            // Default Role: 'user'
+            return [
+                ...commonLinks,
+                <NavLink key="dash" to="/user/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>
             ];
         }
     };
