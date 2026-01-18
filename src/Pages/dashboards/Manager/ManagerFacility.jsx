@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const Facility = () => {
+const ManagerFacility = () => {
     const [equipments, setEquipments] = useState([]);
     const [filterStatus, setFilterStatus] = useState('');
     const [loading, setLoading] = useState(false);
@@ -317,4 +317,4 @@ const Facility = () => {
     );
 };
 
-export default Facility;
+export default ManagerFacility;

@@ -15,6 +15,7 @@ const LandingPage = () => {
                 const data = await response.json();
                 if (data.success) {
                     setPlans(data.data);
+                    console.log(data.data);
                 }
             } catch (error) {
                 console.error("Failed to load plans");

@@ -1,0 +1,372 @@
+:root {
+    --primary-color: #f25f29;
+    --hover-color: #d14918;
+    --dark-bg: #0a0a0a;
+    --card-bg: #111111;
+    --text-light: #ffffff;
+    --text-gray: #a8a8a8;
+    --border-color: #2a2a2a;
+}
+
+body {
+    margin: 0;
+    overflow-x: hidden;
+}
+
+.user-dash-wrapper {
+    min-height: 100vh;
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-dash-header {
+    background: rgba(10, 10, 10, 0.95);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.header-content {
+    max-width: 1200px;
+    width: 100%;
+}
+
+.header-content h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-light);
+}
+
+.header-content p {
+    margin: 5px 0 0 0;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+
+.user-dash-main {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+    box-sizing: border-box;
+}
+
+.onboarding-section {
+    margin-bottom: 4rem;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.onboarding-section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-light);
+    border-left: 4px solid var(--primary-color);
+    padding-left: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.goal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.5rem;
+}
+
+.goal-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 2rem 1rem;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.goal-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    background: #1f1f1f;
+}
+
+.goal-card.active {
+    border-color: var(--primary-color);
+    background: rgba(242, 95, 41, 0.1);
+    box-shadow: 0 0 15px rgba(242, 95, 41, 0.2);
+}
+
+.goal-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.goal-card h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    align-items: stretch;
+    justify-items: center;
+}
+
+.plan-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 380px;
+    box-sizing: border-box;
+    min-height: 500px;
+}
+
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.plan-card.highlighted {
+    background: var(--primary-color);
+    border: none;
+    z-index: 2;
+    box-shadow: 0 15px 40px rgba(242, 95, 41, 0.3);
+    color: white;
+}
+
+.plan-card.highlighted:hover {
+    transform: translateY(-5px);
+}
+
+.best-offer-badge {
+    position: absolute;
+    top: 25px;
+    right: -30px;
+    background: white;
+    color: var(--primary-color);
+    padding: 5px 30px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 3;
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.plan-header h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.price {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.duration {
+    font-size: 1rem;
+    font-weight: 400;
+    opacity: 0.8;
+}
+
+.plan-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.plan-card.highlighted .plan-divider {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+    flex: 1;
+    text-align: left;
+}
+
+.plan-features li {
+    padding: 12px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ccc;
+    line-height: 1.4;
+}
+
+.plan-card.highlighted .plan-features li {
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.plan-features li:last-child {
+    border-bottom: none;
+}
+
+.btn-choose-plan {
+    width: 100%;
+    padding: 16px;
+    border-radius: 50px;
+    border: 1px solid #444;
+    background: transparent;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    margin-top: auto;
+}
+
+.btn-choose-plan:hover {
+    background: #222;
+    border-color: #fff;
+}
+
+.plan-card.highlighted .btn-choose-plan {
+    background: white;
+    color: var(--primary-color);
+    border: none;
+}
+
+.plan-card.highlighted .btn-choose-plan:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.branch-selector {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.form-select {
+    width: 100%;
+    padding: 15px;
+    background: #0a0a0a;
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    font-family: inherit;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.form-select:focus {
+    border-color: var(--primary-color);
+}
+
+.branch-note {
+    margin-top: 15px;
+    color: var(--text-gray);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.loading-screen {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--dark-bg);
+    color: var(--text-gray);
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.no-plans {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 1.1rem;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 900px) {
+    .plans-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .user-dash-main {
+        padding: 2rem 1rem;
+    }
+
+    .header-content h1 {
+        font-size: 1.3rem;
+    }
+
+    .goal-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .plan-card {
+        width: 100%;
+        max-width: none;
+    }
+
+    .plan-card.highlighted {
+        transform: scale(1);
+    }
+
+    .plan-card.highlighted:hover {
+        transform: translateY(-5px);
+    }
+}

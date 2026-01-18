@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const DailyOps = () => {
+const ManagerDailyOps = () => {
     const [userId, setUserId] = useState('');
     const [liveUsers, setLiveUsers] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -144,4 +144,4 @@ const DailyOps = () => {
     );
 };
 
-export default DailyOps;
+export default ManagerDailyOps;

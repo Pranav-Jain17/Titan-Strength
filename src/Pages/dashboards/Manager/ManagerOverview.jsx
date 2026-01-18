@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const Overview = () => {
+const ManagerOverview = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
 
@@ -60,4 +60,4 @@ const Overview = () => {
     );
 };
 
-export default Overview;
+export default ManagerOverview;

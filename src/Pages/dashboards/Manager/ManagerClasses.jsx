@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const Classes = () => {
+const ManagerClasses = () => {
     const [schedule, setSchedule] = useState([]);
     const [loading, setLoading] = useState(true);
     const [view, setView] = useState('list');
@@ -270,4 +270,4 @@ const Classes = () => {
     );
 };
 
-export default Classes;
+export default ManagerClasses;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const Members = () => {
+const ManagerMembers = () => {
     const [members, setMembers] = useState([]);
     const [filter, setFilter] = useState('active');
     const [selectedMember, setSelectedMember] = useState(null);
@@ -135,4 +135,4 @@ const Members = () => {
     );
 };
 
-export default Members;
+export default ManagerMembers;

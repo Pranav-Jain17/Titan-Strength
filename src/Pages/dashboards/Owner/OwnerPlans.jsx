@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const Plans = () => {
+const OwnerPlans = () => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -188,4 +188,4 @@ const Plans = () => {
     );
 };
 
-export default Plans;
+export default OwnerPlans;

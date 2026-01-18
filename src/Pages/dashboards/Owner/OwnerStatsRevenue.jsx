@@ -11,7 +11,7 @@ import {
     Legend
 } from 'recharts';
 
-const StatsRevenue = () => {
+const OwnerStatsRevenue = () => {
     const [stats, setStats] = useState(null);
     const [recentSales, setRecentSales] = useState([]);
     const [revenueData, setRevenueData] = useState([]);
@@ -195,4 +195,4 @@ const StatsRevenue = () => {
     );
 };
 
-export default StatsRevenue;
+export default OwnerStatsRevenue;

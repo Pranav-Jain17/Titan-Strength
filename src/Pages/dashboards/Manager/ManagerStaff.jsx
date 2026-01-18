@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const Staff = () => {
+const ManagerStaff = () => {
     const [trainers, setTrainers] = useState([]);
     const [users, setUsers] = useState([]);
     const [branches, setBranches] = useState([]);
@@ -290,4 +290,4 @@ const Staff = () => {
     );
 };
 
-export default Staff;
+export default ManagerStaff;

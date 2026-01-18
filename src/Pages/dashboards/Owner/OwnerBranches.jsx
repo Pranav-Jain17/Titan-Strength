@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const Branches = () => {
+const OwnerBranches = () => {
     const [branches, setBranches] = useState([]);
     const [managers, setManagers] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -231,4 +231,4 @@ const Branches = () => {
     );
 };
 
-export default Branches;
+export default OwnerBranches;

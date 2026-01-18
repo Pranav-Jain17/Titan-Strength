@@ -1,24 +1,24 @@
 import { useState } from 'react';
 import './managerDashboard.css';
-import Overview from './ManagerOverview.jsx';
-import DailyOps from './ManagerDailyOps.jsx';
-import Members from './ManagerMembers.jsx';
-import Facility from './ManagerFacility.jsx';
-import Staff from './ManagerStaff.jsx';
-import Classes from './ManagerClasses.jsx';
+import ManagerOverview from './ManagerOverview.jsx';
+import ManagerDailyOps from './ManagerDailyOps.jsx';
+import ManagerMembers from './ManagerMembers.jsx';
+import ManagerFacility from './ManagerFacility.jsx';
+import ManagerStaff from './ManagerStaff.jsx';
+import ManagerClasses from './ManagerClasses.jsx';
 
 const ManagerDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
 
     const renderContent = () => {
         switch (activeTab) {
-            case 'overview': return <Overview />;
-            case 'classes': return <Classes />;
-            case 'dailyops': return <DailyOps />;
-            case 'members': return <Members />;
-            case 'facility': return <Facility />;
-            case 'staff': return <Staff />;
-            default: return <Overview />;
+            case 'overview': return <ManagerOverview />;
+            case 'classes': return <ManagerClasses />;
+            case 'dailyops': return <ManagerDailyOps />;
+            case 'members': return <ManagerMembers />;
+            case 'facility': return <ManagerFacility />;
+            case 'staff': return <ManagerStaff />;
+            default: return <ManagerOverview />;
         }
     };
 

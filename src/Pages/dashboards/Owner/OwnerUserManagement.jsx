@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
-const UserManagement = () => {
+const OwnerUserManagement = () => {
     const [users, setUsers] = useState([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
@@ -115,4 +115,4 @@ const UserManagement = () => {
     );
 };
 
-export default UserManagement;
+export default OwnerUserManagement;

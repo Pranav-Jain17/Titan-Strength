@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import './ownerDashboard.css';
-import StatsRevenue from './OwnerStatsRevenue.jsx';
-import Branches from './OwnerBranches.jsx';
-import Plans from './OwnerPlans.jsx';
-import UserManagement from './OwnerUserManagement.jsx';
+import OwnerStatsRevenue from './OwnerStatsRevenue.jsx';
+import OwnerBranches from './OwnerBranches.jsx';
+import OwnerPlans from './OwnerPlans.jsx';
+import OwnerUserManagement from './OwnerUserManagement.jsx';
 
 const OwnerDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -11,15 +11,15 @@ const OwnerDashboard = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'overview':
-                return <StatsRevenue />;
+                return <OwnerStatsRevenue />;
             case 'branches':
-                return <Branches />;
+                return <OwnerBranches />;
             case 'plans':
-                return <Plans />;
+                return <OwnerPlans />;
             case 'users':
-                return <UserManagement />;
+                return <OwnerUserManagement />;
             default:
-                return <StatsRevenue />;
+                return <OwnerStatsRevenue />;
         }
     };
 
