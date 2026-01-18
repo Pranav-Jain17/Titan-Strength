@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import './managerDashboard.css';
-import Overview from './Overview.jsx';
-import DailyOps from './DailyOps.jsx';
-import Members from './Members.jsx';
-import Facility from './Facility.jsx';
-import Staff from './Staff.jsx';
-import Classes from './Classes.jsx'; // Imported new component
+import Overview from './ManagerOverview.jsx';
+import DailyOps from './ManagerDailyOps.jsx';
+import Members from './ManagerMembers.jsx';
+import Facility from './ManagerFacility.jsx';
+import Staff from './ManagerStaff.jsx';
+import Classes from './ManagerClasses.jsx';
 
 const ManagerDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -13,7 +13,7 @@ const ManagerDashboard = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'overview': return <Overview />;
-            case 'classes': return <Classes />; // Added route
+            case 'classes': return <Classes />;
             case 'dailyops': return <DailyOps />;
             case 'members': return <Members />;
             case 'facility': return <Facility />;
