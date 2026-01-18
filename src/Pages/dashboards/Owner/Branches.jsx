@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 const Branches = () => {
     const [branches, setBranches] = useState([]);
-    const [managers, setManagers] = useState([]); // <--- NEW STATE
+    const [managers, setManagers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -22,7 +22,6 @@ const Branches = () => {
 
     const token = getAuthToken();
 
-    // 1. Fetch Branches
     const fetchBranches = async () => {
         try {
             setLoading(true);
@@ -39,7 +38,6 @@ const Branches = () => {
         }
     };
 
-    // 2. Fetch Managers (NEW FUNCTION)
     const fetchManagers = async () => {
         try {
             const response = await fetch(`https://titan-strength.me/api/v1/owner/managers`, {
@@ -54,7 +52,7 @@ const Branches = () => {
 
     useEffect(() => {
         fetchBranches();
-        fetchManagers(); // <--- Call this on mount
+        fetchManagers();
     }, []);
 
     const handleInputChange = (e) => {
@@ -71,7 +69,7 @@ const Branches = () => {
                 description: item.description || '',
                 phone: item.phone || '',
                 email: item.email || '',
-                manager: item.manager?._id || '', // Sets the ID for the dropdown
+                manager: item.manager?._id || '',
                 openingHours: item.openingHours || ''
             });
             setCurrentId(item._id);
@@ -80,10 +78,6 @@ const Branches = () => {
         }
         setShowModal(true);
     };
-
-    // ... (closeModal, handleSubmit, initiateDelete, confirmDelete, renderLocation logic remains the same) ...
-    // Note: Ensure your backend actually has a PUT route for branches. 
-    // In your previous message, you only showed createBranch (POST) and deleteBranch (DELETE).
 
     const closeModal = () => {
         setShowModal(false);
@@ -153,7 +147,6 @@ const Branches = () => {
 
     return (
         <div className="fade-in">
-            {/* ... (Section Header and Cards Grid remain the same) ... */}
             <section className="dashboard-section">
                 <div className="section-header-flex">
                     <h2>Branch Management</h2>
@@ -163,7 +156,6 @@ const Branches = () => {
                     <div className="cards-grid">
                         {branches.map((branch) => (
                             <div key={branch._id} className="dashboard-card">
-                                {/* ... Card content ... */}
                                 <div className="card-header">
                                     <h3>{branch.name}</h3>
                                     <span className={`status-badge ${branch.isActive ? 'active' : 'inactive'}`}>{branch.isActive ? 'Active' : 'Closed'}</span>
@@ -194,8 +186,6 @@ const Branches = () => {
                         <form onSubmit={handleSubmit}>
                             <div className="form-group"><label>Branch Name</label><input type="text" name="name" className="form-input" value={formData.name} onChange={handleInputChange} required /></div>
                             <div className="form-group"><label>Address</label><input type="text" name="address" className="form-input" value={formData.address} onChange={handleInputChange} required /></div>
-
-                            {/* --- CHANGED SECTION: MANAGER DROPDOWN --- */}
                             <div className="form-group">
                                 <label>Assign Manager</label>
                                 <select
@@ -212,7 +202,6 @@ const Branches = () => {
                                     ))}
                                 </select>
                             </div>
-                            {/* --------------------------------------- */}
 
                             <div className="form-group"><label>Description</label><textarea name="description" className="form-input" value={formData.description} onChange={handleInputChange} rows="3" /></div>
                             <div className="form-row">
@@ -226,7 +215,6 @@ const Branches = () => {
                 </div>
             )}
 
-            {/* ... (Delete Modal remains the same) ... */}
             {showDeleteModal && (
                 <div className="modal-overlay">
                     <div className="modal-content confirm-modal-content">

@@ -17,8 +17,6 @@ const StatsRevenue = () => {
     const [revenueData, setRevenueData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [monthsRange, setMonthsRange] = useState(6);
-
-    // PRO FIX: Manual refs to control render timing
     const chartContainerRef = useRef(null);
     const [isChartVisible, setIsChartVisible] = useState(false);
 
@@ -27,22 +25,14 @@ const StatsRevenue = () => {
         return storedUser ? JSON.parse(storedUser).token : null;
     };
 
-    // PRO FIX: This effect monitors the container size. 
-    // It forces the chart to wait until the div actually has width.
     useLayoutEffect(() => {
         const checkSize = () => {
             if (chartContainerRef.current && chartContainerRef.current.offsetWidth > 0) {
                 setIsChartVisible(true);
             }
         };
-
-        // Check immediately
         checkSize();
-
-        // Check again after a tiny delay (for flexbox reflows)
         const timer = setTimeout(checkSize, 100);
-
-        // Optional: Resize observer to keep it robust
         const resizeObserver = new ResizeObserver(checkSize);
         if (chartContainerRef.current) {
             resizeObserver.observe(chartContainerRef.current);
@@ -52,7 +42,7 @@ const StatsRevenue = () => {
             clearTimeout(timer);
             resizeObserver.disconnect();
         };
-    }, [revenueData, loading]); // Re-run when data loads
+    }, [revenueData, loading]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -138,20 +128,11 @@ const StatsRevenue = () => {
             </div>
 
             <div className="dashboard-card">
-                {/* PRO FIX: 
-                   1. We attach the 'ref' here to measure this div.
-                   2. We strictly set width 100% and height.
-                */}
                 <div
                     ref={chartContainerRef}
                     className="chart-wrapper"
                     style={{ width: '100%', height: '300px', minHeight: '300px' }}
                 >
-                    {/* PRO FIX: 
-                       Only render ResponsiveContainer if:
-                       1. We have data
-                       2. AND 'isChartVisible' is true (meaning offsetWidth > 0)
-                    */}
                     {revenueData && revenueData.length > 0 && isChartVisible ? (
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -178,7 +159,6 @@ const StatsRevenue = () => {
                         </ResponsiveContainer>
                     ) : (
                         <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {/* Show a placeholder while waiting for dimensions or data */}
                             <p style={{ color: '#666' }}>
                                 {revenueData?.length === 0 ? "No revenue data available" : "Loading Chart..."}
                             </p>
