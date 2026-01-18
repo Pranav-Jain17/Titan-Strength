@@ -1,0 +1,248 @@
+.member-wrapper {
+    min-height: 100vh;
+    background-color: #0a0a0a;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+}
+
+.member-nav {
+    position: sticky;
+    top: 0;
+    background-color: #111;
+    border-bottom: 1px solid #333;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.member-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    padding: 15px 0;
+    margin: 0;
+}
+
+.member-nav li {
+    cursor: pointer;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    padding: 15px 0;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.member-nav li:hover,
+.member-nav li.active {
+    color: #f25f29;
+    border-bottom-color: #f25f29;
+}
+
+.member-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.dashboard-section {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.section-header-flex {
+    margin-bottom: 30px;
+}
+
+.section-header-flex h2 {
+    font-size: 1.8rem;
+    color: white;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.dashboard-card {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 25px;
+    transition: transform 0.2s;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    border-color: #f25f29;
+}
+
+.profile-card p {
+    margin-bottom: 10px;
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+.stat-card {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #f25f29;
+    margin: 10px 0;
+}
+
+.stat-text {
+    font-size: 1.2rem;
+    color: white;
+    font-weight: 600;
+}
+
+.stat-text.highlight {
+    color: #f25f29;
+    margin-bottom: 10px;
+}
+
+.stat-label {
+    color: #888;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.status-badge.active,
+.status-badge.booked {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+}
+
+.status-badge.expired {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+}
+
+.expiry-text {
+    margin-top: 15px;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.table-container {
+    overflow-x: auto;
+    background: #1a1a1a;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+}
+
+.dashboard-table th {
+    background-color: #111;
+    color: #bbb;
+    font-weight: 600;
+}
+
+.dashboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-dot.present {
+    background-color: #28a745;
+}
+
+.class-card h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.class-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 15px;
+}
+
+.class-card .card-body p {
+    margin-bottom: 8px;
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.no-data {
+    color: #888;
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.loading-text {
+    text-align: center;
+    color: #888;
+    margin-top: 40px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .member-nav ul {
+        gap: 15px;
+    }
+
+    .member-nav li {
+        font-size: 0.8rem;
+    }
+
+    .section-header-flex h2 {
+        font-size: 1.5rem;
+    }
+}

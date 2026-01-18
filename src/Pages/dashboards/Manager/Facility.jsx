@@ -4,9 +4,18 @@ import { toast } from 'react-toastify';
 const Facility = () => {
     const [equipments, setEquipments] = useState([]);
     const [filterStatus, setFilterStatus] = useState('');
+    const [loading, setLoading] = useState(false);
+
     const [equipForm, setEquipForm] = useState({ name: '', tag: '' });
     const [maintForm, setMaintForm] = useState({ equipmentId: '', description: '' });
-    const [loading, setLoading] = useState(false);
+
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editId, setEditId] = useState(null);
+    const [editForm, setEditForm] = useState({ name: '', tag: '', status: '' });
+    const [showEditModal, setShowEditModal] = useState(false);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
 
     const getAuthToken = () => {
         const storedUser = localStorage.getItem('titanUser');
@@ -62,6 +71,62 @@ const Facility = () => {
         }
     };
 
+    const initiateDelete = (id) => {
+        setDeleteId(id);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteId) return;
+        const token = getAuthToken();
+        try {
+            const res = await fetch(`https://titan-strength.me/api/v1/manager/equipment/${deleteId}`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                toast.success("Equipment Deleted");
+                fetchEquipment();
+                setShowDeleteModal(false);
+                setDeleteId(null);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (err) {
+            toast.error("Failed to delete equipment");
+        }
+    };
+
+    const openEditModal = (item) => {
+        setIsEditMode(true);
+        setEditId(item._id);
+        setEditForm({ name: item.name, tag: item.tag || '', status: item.status });
+        setShowEditModal(true);
+    };
+
+    const handleUpdateEquipment = async (e) => {
+        e.preventDefault();
+        const token = getAuthToken();
+        try {
+            const res = await fetch(`https://titan-strength.me/api/v1/manager/equipment/${editId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify(editForm)
+            });
+            const data = await res.json();
+            if (data.success) {
+                toast.success("Equipment Updated");
+                setShowEditModal(false);
+                fetchEquipment();
+            } else {
+                toast.error(data.message);
+            }
+        } catch (err) {
+            toast.error("Failed to update equipment");
+        }
+    };
+
     const handleReport = async (e) => {
         e.preventDefault();
         const token = getAuthToken();
@@ -112,7 +177,7 @@ const Facility = () => {
                             <th>Name</th>
                             <th>Tag / ID</th>
                             <th>Status</th>
-                            <th>Added By</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -136,7 +201,10 @@ const Facility = () => {
                                             {item.status.replace(/_/g, ' ')}
                                         </span>
                                     </td>
-                                    <td>{item.createdBy?.name || 'System'}</td>
+                                    <td>
+                                        <button className="btn-edit" onClick={() => openEditModal(item)} style={{ marginRight: '10px' }}>Edit</button>
+                                        <button className="btn-delete" onClick={() => initiateDelete(item._id)}>Delete</button>
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -187,6 +255,64 @@ const Facility = () => {
                     </form>
                 </div>
             </div>
+
+            {showEditModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h3>Edit Equipment</h3>
+                            <button className="close-btn" onClick={() => setShowEditModal(false)}>&times;</button>
+                        </div>
+                        <form onSubmit={handleUpdateEquipment}>
+                            <div className="form-group">
+                                <label>Name</label>
+                                <input type="text" className="form-input" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} required />
+                            </div>
+                            <div className="form-group">
+                                <label>Tag</label>
+                                <input type="text" className="form-input" value={editForm.tag} onChange={(e) => setEditForm({ ...editForm, tag: e.target.value })} />
+                            </div>
+                            <div className="form-group">
+                                <label>Status</label>
+                                <select className="form-input" value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}>
+                                    <option value="working">Working</option>
+                                    <option value="maintenance">Maintenance</option>
+                                    <option value="out_of_order">Out of Order</option>
+                                </select>
+                            </div>
+                            <button type="submit" className="btn-primary-large full-width">Update</button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {showDeleteModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content" style={{ maxWidth: '400px' }}>
+                        <div className="modal-header">
+                            <h3 style={{ color: '#dc3545' }}>Confirm Deletion</h3>
+                            <button className="close-btn" onClick={() => setShowDeleteModal(false)}>&times;</button>
+                        </div>
+                        <div style={{ marginBottom: '25px' }}>
+                            <p>Are you sure you want to delete this equipment? This action cannot be undone.</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '15px' }}>
+                            <button
+                                className="btn-edit full-width"
+                                onClick={() => setShowDeleteModal(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="btn-delete full-width"
+                                onClick={confirmDelete}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </section>
     );
 };

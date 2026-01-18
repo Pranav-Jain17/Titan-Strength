@@ -59,6 +59,29 @@ const DailyOps = () => {
         }
     };
 
+    const handleCheckOut = async (userId) => {
+        const token = getAuthToken();
+        try {
+            const response = await fetch('https://titan-strength.me/api/v1/manager/check-out', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ userId })
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast.success("Checked out successfully");
+                fetchLiveAttendance();
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error("Check-out failed");
+        }
+    };
+
     return (
         <section className="dashboard-section fade-in">
             <div className="ops-container">
@@ -91,6 +114,7 @@ const DailyOps = () => {
                                     <th>Name</th>
                                     <th>Role</th>
                                     <th>Time In</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,9 +123,18 @@ const DailyOps = () => {
                                         <td>{record.user?.name}</td>
                                         <td>{record.user?.role}</td>
                                         <td>{new Date(record.checkedInAt).toLocaleTimeString()}</td>
+                                        <td>
+                                            <button
+                                                className="btn-delete"
+                                                style={{ padding: '5px 10px', fontSize: '0.8rem' }}
+                                                onClick={() => handleCheckOut(record.user?._id)}
+                                            >
+                                                Check Out
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
-                                {liveUsers.length === 0 && <tr><td colSpan="3" className="text-center">Gym is empty</td></tr>}
+                                {liveUsers.length === 0 && <tr><td colSpan="4" className="text-center">Gym is empty</td></tr>}
                             </tbody>
                         </table>
                     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { toast } from 'react-toastify';
 import {
     BarChart,
@@ -15,19 +15,51 @@ const StatsRevenue = () => {
     const [stats, setStats] = useState(null);
     const [recentSales, setRecentSales] = useState([]);
     const [revenueData, setRevenueData] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [monthsRange, setMonthsRange] = useState(6);
+
+    // PRO FIX: Manual refs to control render timing
+    const chartContainerRef = useRef(null);
+    const [isChartVisible, setIsChartVisible] = useState(false);
 
     const getAuthToken = () => {
         const storedUser = localStorage.getItem('titanUser');
         return storedUser ? JSON.parse(storedUser).token : null;
     };
 
+    // PRO FIX: This effect monitors the container size. 
+    // It forces the chart to wait until the div actually has width.
+    useLayoutEffect(() => {
+        const checkSize = () => {
+            if (chartContainerRef.current && chartContainerRef.current.offsetWidth > 0) {
+                setIsChartVisible(true);
+            }
+        };
+
+        // Check immediately
+        checkSize();
+
+        // Check again after a tiny delay (for flexbox reflows)
+        const timer = setTimeout(checkSize, 100);
+
+        // Optional: Resize observer to keep it robust
+        const resizeObserver = new ResizeObserver(checkSize);
+        if (chartContainerRef.current) {
+            resizeObserver.observe(chartContainerRef.current);
+        }
+
+        return () => {
+            clearTimeout(timer);
+            resizeObserver.disconnect();
+        };
+    }, [revenueData, loading]); // Re-run when data loads
+
     useEffect(() => {
         const fetchData = async () => {
             const token = getAuthToken();
             try {
-                setLoading(true);
+                if (stats) setLoading(true);
+
                 const timestamp = new Date().getTime();
 
                 const [dashboardRes, chartRes] = await Promise.all([
@@ -53,6 +85,7 @@ const StatsRevenue = () => {
 
             } catch (error) {
                 toast.error("Failed to load dashboard data");
+                console.error(error);
             } finally {
                 setLoading(false);
             }
@@ -104,30 +137,54 @@ const StatsRevenue = () => {
                 </select>
             </div>
 
-            <div className="dashboard-card" style={{ height: '400px', padding: '20px', marginBottom: '40px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={revenueData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-                        <XAxis
-                            dataKey="month"
-                            stroke="#888"
-                            tick={{ fill: '#888' }}
-                        />
-                        <YAxis
-                            stroke="#888"
-                            tick={{ fill: '#888' }}
-                            tickFormatter={(value) => `$${value}`}
-                        />
-                        <Tooltip
-                            contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '4px' }}
-                            labelStyle={{ color: '#fff' }}
-                            itemStyle={{ color: '#4caf50' }}
-                            formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']}
-                        />
-                        <Legend />
-                        <Bar dataKey="revenue" fill="var(--primary-color)" name="Revenue" radius={[4, 4, 0, 0]} barSize={40} />
-                    </BarChart>
-                </ResponsiveContainer>
+            <div className="dashboard-card">
+                {/* PRO FIX: 
+                   1. We attach the 'ref' here to measure this div.
+                   2. We strictly set width 100% and height.
+                */}
+                <div
+                    ref={chartContainerRef}
+                    className="chart-wrapper"
+                    style={{ width: '100%', height: '300px', minHeight: '300px' }}
+                >
+                    {/* PRO FIX: 
+                       Only render ResponsiveContainer if:
+                       1. We have data
+                       2. AND 'isChartVisible' is true (meaning offsetWidth > 0)
+                    */}
+                    {revenueData && revenueData.length > 0 && isChartVisible ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                                <XAxis
+                                    dataKey="month"
+                                    stroke="#888"
+                                    tick={{ fill: '#888', fontSize: 12 }}
+                                />
+                                <YAxis
+                                    stroke="#888"
+                                    tick={{ fill: '#888', fontSize: 12 }}
+                                    tickFormatter={(value) => `$${value}`}
+                                />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333', borderRadius: '4px' }}
+                                    labelStyle={{ color: '#fff' }}
+                                    itemStyle={{ color: '#f25f29' }}
+                                    formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']}
+                                />
+                                <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                                <Bar dataKey="revenue" fill="#f25f29" name="Revenue" radius={[4, 4, 0, 0]} barSize={40} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {/* Show a placeholder while waiting for dimensions or data */}
+                            <p style={{ color: '#666' }}>
+                                {revenueData?.length === 0 ? "No revenue data available" : "Loading Chart..."}
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <h3 className="section-subtitle">Recent Sales</h3>
@@ -146,7 +203,7 @@ const StatsRevenue = () => {
                             <tr key={sale._id}>
                                 <td>{sale.user?.name || 'Unknown'}</td>
                                 <td>{sale.plan?.name || 'N/A'}</td>
-                                <td className="text-green">${sale.plan?.price}</td>
+                                <td className="price-badge">${sale.plan?.price}</td>
                                 <td>{new Date(sale.createdAt).toLocaleDateString()}</td>
                             </tr>
                         ))}

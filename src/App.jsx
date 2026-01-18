@@ -14,7 +14,7 @@ import Unauthorized from '../src/Pages/auth/Unauthorized.jsx';
 import ManagerDashboard from '../src/Pages/dashboards/Manager/ManagerDashboard.jsx';
 import OwnerDashboard from './Pages/dashboards/Owner/OwnerDashboard.jsx';
 import TrainerDashboard from '../src/Pages/dashboards/TrainerDashboard.jsx';
-import MemberDashboard from '../src/Pages/dashboards/MemberDashboard.jsx';
+import MemberDashboard from './Pages/dashboards/Member/MemberDashboard.jsx';
 import UserDashboard from '../src/Pages/dashboards/UserDashboard.jsx';
 
 function App() {

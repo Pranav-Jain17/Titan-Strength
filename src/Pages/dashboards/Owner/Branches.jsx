@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 
 const Branches = () => {
     const [branches, setBranches] = useState([]);
+    const [managers, setManagers] = useState([]); // <--- NEW STATE
     const [loading, setLoading] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -21,6 +22,7 @@ const Branches = () => {
 
     const token = getAuthToken();
 
+    // 1. Fetch Branches
     const fetchBranches = async () => {
         try {
             setLoading(true);
@@ -37,8 +39,22 @@ const Branches = () => {
         }
     };
 
+    // 2. Fetch Managers (NEW FUNCTION)
+    const fetchManagers = async () => {
+        try {
+            const response = await fetch(`https://titan-strength.me/api/v1/owner/managers`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (data.success) setManagers(data.data);
+        } catch (error) {
+            console.error("Failed to load managers");
+        }
+    };
+
     useEffect(() => {
         fetchBranches();
+        fetchManagers(); // <--- Call this on mount
     }, []);
 
     const handleInputChange = (e) => {
@@ -50,8 +66,13 @@ const Branches = () => {
         if (item) {
             let addressString = item.address || (item.location?.formattedAddress) || (typeof item.location === 'string' ? item.location : '');
             setFormData({
-                name: item.name, address: addressString, description: item.description || '', phone: item.phone || '',
-                email: item.email || '', manager: item.manager?._id || '', openingHours: item.openingHours || ''
+                name: item.name,
+                address: addressString,
+                description: item.description || '',
+                phone: item.phone || '',
+                email: item.email || '',
+                manager: item.manager?._id || '', // Sets the ID for the dropdown
+                openingHours: item.openingHours || ''
             });
             setCurrentId(item._id);
         } else {
@@ -59,6 +80,10 @@ const Branches = () => {
         }
         setShowModal(true);
     };
+
+    // ... (closeModal, handleSubmit, initiateDelete, confirmDelete, renderLocation logic remains the same) ...
+    // Note: Ensure your backend actually has a PUT route for branches. 
+    // In your previous message, you only showed createBranch (POST) and deleteBranch (DELETE).
 
     const closeModal = () => {
         setShowModal(false);
@@ -128,6 +153,7 @@ const Branches = () => {
 
     return (
         <div className="fade-in">
+            {/* ... (Section Header and Cards Grid remain the same) ... */}
             <section className="dashboard-section">
                 <div className="section-header-flex">
                     <h2>Branch Management</h2>
@@ -137,6 +163,7 @@ const Branches = () => {
                     <div className="cards-grid">
                         {branches.map((branch) => (
                             <div key={branch._id} className="dashboard-card">
+                                {/* ... Card content ... */}
                                 <div className="card-header">
                                     <h3>{branch.name}</h3>
                                     <span className={`status-badge ${branch.isActive ? 'active' : 'inactive'}`}>{branch.isActive ? 'Active' : 'Closed'}</span>
@@ -167,8 +194,27 @@ const Branches = () => {
                         <form onSubmit={handleSubmit}>
                             <div className="form-group"><label>Branch Name</label><input type="text" name="name" className="form-input" value={formData.name} onChange={handleInputChange} required /></div>
                             <div className="form-group"><label>Address</label><input type="text" name="address" className="form-input" value={formData.address} onChange={handleInputChange} required /></div>
+
+                            {/* --- CHANGED SECTION: MANAGER DROPDOWN --- */}
+                            <div className="form-group">
+                                <label>Assign Manager</label>
+                                <select
+                                    name="manager"
+                                    className="form-input"
+                                    value={formData.manager}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="">-- Select Manager --</option>
+                                    {managers.map(mgr => (
+                                        <option key={mgr._id} value={mgr._id}>
+                                            {mgr.name} ({mgr.email})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            {/* --------------------------------------- */}
+
                             <div className="form-group"><label>Description</label><textarea name="description" className="form-input" value={formData.description} onChange={handleInputChange} rows="3" /></div>
-                            <div className="form-group"><label>Manager ID</label><input type="text" name="manager" className="form-input" value={formData.manager} onChange={handleInputChange} /></div>
                             <div className="form-row">
                                 <div className="form-group"><label>Phone</label><input type="text" name="phone" className="form-input" value={formData.phone} onChange={handleInputChange} /></div>
                                 <div className="form-group"><label>Email</label><input type="email" name="email" className="form-input" value={formData.email} onChange={handleInputChange} /></div>
@@ -180,6 +226,7 @@ const Branches = () => {
                 </div>
             )}
 
+            {/* ... (Delete Modal remains the same) ... */}
             {showDeleteModal && (
                 <div className="modal-overlay">
                     <div className="modal-content confirm-modal-content">

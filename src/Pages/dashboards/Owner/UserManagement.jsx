@@ -11,7 +11,7 @@ const UserManagement = () => {
         return storedUser ? JSON.parse(storedUser).token : null;
     };
 
-    const fetchUsers = async (searchQuery = '') => {
+    const fetchUsers = async (searchQuery) => {
         const token = getAuthToken();
         try {
             setLoading(true);
@@ -41,12 +41,20 @@ const UserManagement = () => {
     };
 
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        const debounceTimer = setTimeout(() => {
+            fetchUsers(search);
+        }, 500);
+
+        return () => clearTimeout(debounceTimer);
+    }, [search]);
 
     const handleSearch = (e) => {
         e.preventDefault();
-        fetchUsers(search);
+    };
+
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        toast.success("ID copied to clipboard!");
     };
 
     return (
@@ -70,6 +78,7 @@ const UserManagement = () => {
                     <table className="dashboard-table">
                         <thead>
                             <tr>
+                                <th>User ID</th>
                                 <th>Name</th>
                                 <th>Email</th>
                                 <th>Role</th>
@@ -79,13 +88,25 @@ const UserManagement = () => {
                         <tbody>
                             {users.map(user => (
                                 <tr key={user._id}>
+                                    <td
+                                        onClick={() => copyToClipboard(user._id)}
+                                        style={{
+                                            fontFamily: 'monospace',
+                                            fontSize: '0.85em',
+                                            color: '#888',
+                                            cursor: 'pointer'
+                                        }}
+                                        title="Click to copy"
+                                    >
+                                        {user._id}
+                                    </td>
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
                                     <td><span className={`role-badge role-${user.role}`}>{user.role}</span></td>
                                     <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                                 </tr>
                             ))}
-                            {users.length === 0 && <tr><td colSpan="4" className="text-center">No users found</td></tr>}
+                            {users.length === 0 && <tr><td colSpan="5" className="text-center">No users found</td></tr>}
                         </tbody>
                     </table>
                 </div>
