@@ -15,7 +15,6 @@ const LandingPage = () => {
                 const data = await response.json();
                 if (data.success) {
                     setPlans(data.data);
-                    console.log(data.data);
                 }
             } catch (error) {
                 console.error("Failed to load plans");
@@ -149,34 +148,42 @@ const LandingPage = () => {
                     {plansLoading ? (
                         <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#888' }}>Loading plans...</p>
                     ) : (
-                        plans.map((plan) => (
-                            <div
-                                key={plan._id}
-                                className={`pricing-card ${plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('gold') ? 'highlight' : ''}`}
-                            >
-                                {(plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('gold')) && (
-                                    <div className="tag">Best Offer</div>
-                                )}
-                                <h3>{plan.name}</h3>
-                                <div className="price">${plan.price}<span>/mo</span></div>
-                                <ul className="features-list">
-                                    <li>Access to Gym Equipment</li>
-                                    <li>Locker Access</li>
-                                    <li>Free Wifi</li>
-                                    {plan.features?.includesPersonalTraining
-                                        ? <li>Unlimited Personal Training</li>
-                                        : <li className="disabled">Personal Trainer</li>
-                                    }
-                                    {plan.features?.canBookClasses
-                                        ? <li>Up to {plan.features.maxClassesPerWeek} Classes/Week</li>
-                                        : <li className="disabled">Group Classes</li>
-                                    }
-                                </ul>
-                                <button className={plan.name.toLowerCase().includes('standard') || plan.name.toLowerCase().includes('gold') ? "btn-white-large full-width" : "btn-secondary-large full-width"}>
-                                    Choose Plan
-                                </button>
-                            </div>
-                        ))
+                        plans.map((plan) => {
+                            const isStandard = plan.name === 'Standard';
+                            return (
+                                <div
+                                    key={plan._id}
+                                    className={`pricing-card ${isStandard ? 'highlighted' : ''}`}
+                                >
+                                    {isStandard && (
+                                        <div className="tag">Best Offer</div>
+                                    )}
+                                    <div className="pricing-header">
+                                        <h3>{plan.name}</h3>
+                                        <div className="price">${plan.price}<span>/mo</span></div>
+                                    </div>
+
+                                    <div className="pricing-divider"></div>
+
+                                    <ul className="features-list">
+                                        <li>Access to Gym Equipment</li>
+                                        <li>Locker Access</li>
+                                        <li>Free Wifi</li>
+                                        {plan.features?.includesPersonalTraining && <li>Personal Trainer</li>}
+                                        {plan.features?.canBookClasses && <li>Up to {plan.features.maxClassesPerWeek} Classes/Week</li>}
+                                        {plan.features?.accessAllBranches && <li>Access All Branches</li>}
+                                        {plan.description && plan.description.split(/,|\n/).map((feature, i) => (
+                                            feature.trim() && !feature.toLowerCase().includes('trainer') && !feature.toLowerCase().includes('classes') && (
+                                                <li key={i}>{feature.trim()}</li>
+                                            )
+                                        ))}
+                                    </ul>
+                                    <Link to="/signup" className={`btn-select-plan ${isStandard ? 'highlighted-btn' : ''}`}>
+                                        CHOOSE PLAN
+                                    </Link>
+                                </div>
+                            );
+                        })
                     )}
                 </div>
             </section>
