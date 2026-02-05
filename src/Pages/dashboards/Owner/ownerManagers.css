@@ -1,0 +1,165 @@
+:root {
+    --primary: #f25f29;
+    --bg-dark: #0a0a0a;
+    --bg-panel: #1a1a1a;
+    --nav-bg: #111;
+    --border: #333;
+    --text-main: #fff;
+    --text-muted: #ccc;
+    --success: #28a745;
+    --danger: #dc3545;
+}
+
+.dashboard-section {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.section-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.search-wrapper {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    padding: 10px 15px;
+    background: #222;
+    border: 1px solid #444;
+    color: var(--text-main);
+    border-radius: 6px;
+    min-width: 250px;
+    font-size: 0.95rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: var(--bg-panel);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 800px;
+}
+
+.dashboard-table th {
+    background: #151515;
+    color: var(--text-muted);
+    padding: 16px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+}
+
+.dashboard-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+.dashboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.fw-500 {
+    font-weight: 600;
+    color: #fff;
+}
+
+.clickable-id {
+    font-family: monospace;
+    font-size: 0.85em;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.clickable-id:hover {
+    color: var(--primary);
+}
+
+.branch-badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.branch-badge.assigned {
+    background: rgba(40, 167, 69, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.branch-badge.unassigned {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.btn-secondary {
+    background: #444;
+    color: #fff;
+    padding: 6px 12px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s;
+}
+
+.btn-secondary:hover {
+    opacity: 0.9;
+}
+
+.empty-state-small {
+    padding: 40px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .section-header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search-input {
+        width: 100%;
+        min-width: unset;
+    }
+}

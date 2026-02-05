@@ -1,31 +1,29 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import './ownerUserManagement.css';
 
 const OwnerUserManagement = () => {
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState([]); // Stores ALL users
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
+    const [viewUser, setViewUser] = useState(null);
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
 
     const getAuthToken = () => {
         const storedUser = localStorage.getItem('titanUser');
         return storedUser ? JSON.parse(storedUser).token : null;
     };
 
-    const fetchUsers = async (searchQuery) => {
-        const token = getAuthToken();
+    const token = getAuthToken();
+
+    useEffect(() => {
+        fetchAllUsers();
+    }, []);
+
+    const fetchAllUsers = async () => {
         try {
             setLoading(true);
-            let url = 'https://titan-strength.me/api/v1/users';
-
-            if (searchQuery) {
-                if (searchQuery.includes('@')) {
-                    url += `?email=${searchQuery}`;
-                } else {
-                    url += `?name=${searchQuery}`;
-                }
-            }
-
-            const response = await fetch(url, {
+            const response = await fetch('https://titan-strength.me/api/v1/users', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await response.json();
@@ -40,15 +38,26 @@ const OwnerUserManagement = () => {
         }
     };
 
-    useEffect(() => {
-        const debounceTimer = setTimeout(() => {
-            fetchUsers(search);
-        }, 500);
+    const fetchUserDetails = async (id) => {
+        try {
+            const response = await fetch(`https://titan-strength.me/api/v1/users/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (data.success) {
+                setViewUser(data.data);
+                setShowDetailsModal(true);
+            }
+        } catch (error) {
+            toast.error("Failed to load user details");
+        }
+    };
 
-        return () => clearTimeout(debounceTimer);
-    }, [search]);
+    const handleSearchChange = (e) => {
+        setSearch(e.target.value);
+    };
 
-    const handleSearch = (e) => {
+    const handleSearchSubmit = (e) => {
         e.preventDefault();
     };
 
@@ -57,61 +66,130 @@ const OwnerUserManagement = () => {
         toast.success("ID copied to clipboard!");
     };
 
-    return (
-        <section className="dashboard-section fade-in">
-            <div className="section-header-flex">
-                <h2>User Management</h2>
-                <form onSubmit={handleSearch} className="search-form">
-                    <input
-                        type="text"
-                        placeholder="Search by name or email..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="search-input"
-                    />
-                    <button type="submit" className="btn-primary-small">Search</button>
-                </form>
-            </div>
+    const closeDetailsModal = () => {
+        setShowDetailsModal(false);
+        setViewUser(null);
+    };
 
-            {loading ? <p className="loading-text">Loading users...</p> : (
-                <div className="table-container">
-                    <table className="dashboard-table">
-                        <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Joined</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map(user => (
-                                <tr key={user._id}>
-                                    <td
-                                        onClick={() => copyToClipboard(user._id)}
-                                        style={{
-                                            fontFamily: 'monospace',
-                                            fontSize: '0.85em',
-                                            color: '#888',
-                                            cursor: 'pointer'
-                                        }}
-                                        title="Click to copy"
-                                    >
-                                        {user._id}
-                                    </td>
-                                    <td>{user.name}</td>
-                                    <td>{user.email}</td>
-                                    <td><span className={`role-badge role-${user.role}`}>{user.role}</span></td>
-                                    <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+        });
+    };
+
+    const filteredUsers = users.filter((user) => {
+        const term = search.toLowerCase();
+        return (
+            user.name?.toLowerCase().includes(term) ||
+            user.email?.toLowerCase().includes(term) ||
+            user._id?.toLowerCase().includes(term)
+        );
+    });
+
+    return (
+        <div className="fade-in">
+            <section className="dashboard-section">
+                <div className="section-header-flex">
+                    <h2>User Management</h2>
+                    <form onSubmit={handleSearchSubmit} className="search-form">
+                        <input
+                            type="text"
+                            placeholder="Search by name, email or ID..."
+                            value={search}
+                            onChange={handleSearchChange}
+                            className="search-input"
+                        />
+                        <button type="submit" className="btn-primary-small">Search</button>
+                    </form>
+                </div>
+
+                {loading ? <p className="loading-text">Loading users...</p> : (
+                    <div className="table-container">
+                        <table className="dashboard-table">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th style={{ textAlign: 'right' }}>Actions</th>
                                 </tr>
-                            ))}
-                            {users.length === 0 && <tr><td colSpan="5" className="text-center">No users found</td></tr>}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {filteredUsers.map(user => (
+                                    <tr key={user._id}>
+                                        <td
+                                            onClick={() => copyToClipboard(user._id)}
+                                            className="clickable-id"
+                                            title="Click to copy"
+                                        >
+                                            {user._id}
+                                        </td>
+                                        <td className="fw-500">{user.name}</td>
+                                        <td className="text-muted-sm">{user.email}</td>
+                                        <td>
+                                            <span className={`status-badge ${user.role === 'owner' ? 'active' : 'inactive'}`}>
+                                                {user.role}
+                                            </span>
+                                        </td>
+                                        <td>{formatDate(user.createdAt)}</td>
+                                        <td style={{ textAlign: 'right' }}>
+                                            <button className="btn-secondary" onClick={() => fetchUserDetails(user._id)}>View</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {filteredUsers.length === 0 && (
+                                    <tr>
+                                        <td colSpan="6" className="empty-state-small">
+                                            {search ? "No users match your search." : "No users found."}
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </section>
+
+            {showDetailsModal && viewUser && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header-modern">
+                            <div className="header-title">
+                                <h3>{viewUser.name}</h3>
+                                <span className={`status-badge-pill active`}>{viewUser.role}</span>
+                            </div>
+                            <button className="close-btn-modern" onClick={closeDetailsModal}>&times;</button>
+                        </div>
+
+                        <div className="modal-body-content">
+                            <div className="info-grid">
+                                <div className="info-item">
+                                    <label>Email</label>
+                                    <div className="info-value">{viewUser.email}</div>
+                                </div>
+                                <div className="info-item">
+                                    <label>User ID</label>
+                                    <div className="info-sub" onClick={() => copyToClipboard(viewUser._id)} style={{ cursor: 'pointer' }} title="Click to copy">
+                                        {viewUser._id}
+                                    </div>
+                                </div>
+                                <div className="info-item">
+                                    <label>Role</label>
+                                    <div className="info-value" style={{ textTransform: 'capitalize' }}>{viewUser.role}</div>
+                                </div>
+                                <div className="info-item">
+                                    <label>Date Joined</label>
+                                    <div className="info-value">{formatDate(viewUser.createdAt)}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
-        </section>
+        </div>
     );
 };
 

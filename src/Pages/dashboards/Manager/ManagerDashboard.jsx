@@ -6,6 +6,7 @@ import ManagerMembers from './ManagerMembers.jsx';
 import ManagerFacility from './ManagerFacility.jsx';
 import ManagerStaff from './ManagerStaff.jsx';
 import ManagerClasses from './ManagerClasses.jsx';
+import ManagerSubscriptions from './ManagerSubscriptions.jsx';
 
 const ManagerDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -18,6 +19,7 @@ const ManagerDashboard = () => {
             case 'members': return <ManagerMembers />;
             case 'facility': return <ManagerFacility />;
             case 'staff': return <ManagerStaff />;
+            case 'subscriptions': return <ManagerSubscriptions />;
             default: return <ManagerOverview />;
         }
     };
@@ -32,6 +34,7 @@ const ManagerDashboard = () => {
                     <li className={activeTab === 'members' ? 'active' : ''} onClick={() => setActiveTab('members')}>Members</li>
                     <li className={activeTab === 'facility' ? 'active' : ''} onClick={() => setActiveTab('facility')}>Facility</li>
                     <li className={activeTab === 'staff' ? 'active' : ''} onClick={() => setActiveTab('staff')}>Staff</li>
+                    <li className={activeTab === 'subscriptions' ? 'active' : ''} onClick={() => setActiveTab('subscriptions')}>Subscriptions</li>
                 </ul>
             </nav>
             <div className="manager-content">

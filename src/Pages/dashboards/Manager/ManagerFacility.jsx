@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import './managerFacility.css';
 
 const ManagerFacility = () => {
     const [equipments, setEquipments] = useState([]);
+    const [maintenanceLogs, setMaintenanceLogs] = useState([]);
     const [filterStatus, setFilterStatus] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -27,26 +29,41 @@ const ManagerFacility = () => {
         try {
             setLoading(true);
             let url = 'https://titan-strength.me/api/v1/manager/equipment';
-            if (filterStatus) {
-                url += `?status=${filterStatus}`;
-            }
+            if (filterStatus) url += `?status=${filterStatus}`;
 
-            const response = await fetch(url, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (data.success) {
-                setEquipments(data.data);
-            }
+            const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
+            const data = await res.json();
+            if (data.success) setEquipments(data.data);
         } catch (error) {
-            toast.error("Failed to load equipment list");
+            console.error("Equipment load error", error);
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchMaintenance = async () => {
+        const token = getAuthToken();
+        try {
+            const res = await fetch('https://titan-strength.me/api/v1/manager/maintenance', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                setMaintenanceLogs(data.data.filter(log => log.status !== 'fixed'));
+            }
+        } catch (error) {
+            console.warn("Maintenance logs could not be loaded (API might be missing)");
+        }
+    };
+
+    const refreshAll = () => {
+        fetchEquipment();
+        fetchMaintenance();
+    };
+
     useEffect(() => {
         fetchEquipment();
+        fetchMaintenance();
     }, [filterStatus]);
 
     const handleAddEquipment = async (e) => {
@@ -62,7 +79,7 @@ const ManagerFacility = () => {
             if (data.success) {
                 toast.success("Equipment Added");
                 setEquipForm({ name: '', tag: '' });
-                fetchEquipment();
+                refreshAll();
             } else {
                 toast.error(data.message);
             }
@@ -87,7 +104,7 @@ const ManagerFacility = () => {
             const data = await res.json();
             if (data.success) {
                 toast.success("Equipment Deleted");
-                fetchEquipment();
+                refreshAll();
                 setShowDeleteModal(false);
                 setDeleteId(null);
             } else {
@@ -118,7 +135,7 @@ const ManagerFacility = () => {
             if (data.success) {
                 toast.success("Equipment Updated");
                 setShowEditModal(false);
-                fetchEquipment();
+                refreshAll();
             } else {
                 toast.error(data.message);
             }
@@ -140,7 +157,7 @@ const ManagerFacility = () => {
             if (data.success) {
                 toast.success("Maintenance Reported");
                 setMaintForm({ equipmentId: '', description: '' });
-                fetchEquipment();
+                fetchMaintenance();
             } else {
                 toast.error(data.message);
             }
@@ -149,12 +166,23 @@ const ManagerFacility = () => {
         }
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'working': return '#28a745';
-            case 'maintenance': return '#ffc107';
-            case 'out_of_order': return '#dc3545';
-            default: return '#ccc';
+    const handleUpdateMaintenanceStatus = async (id, newStatus) => {
+        const token = getAuthToken();
+        try {
+            const res = await fetch(`https://titan-strength.me/api/v1/manager/maintenance/${id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ status: newStatus })
+            });
+            const data = await res.json();
+            if (data.success) {
+                toast.success(`Ticket marked as ${newStatus.replace('_', ' ')}`);
+                refreshAll();
+            } else {
+                toast.error(data.message);
+            }
+        } catch (err) {
+            toast.error("Failed to update status");
         }
     };
 
@@ -170,7 +198,7 @@ const ManagerFacility = () => {
                 </div>
             </div>
 
-            <div className="table-container" style={{ marginBottom: '40px' }}>
+            <div className="table-container mb-40">
                 <table className="dashboard-table">
                     <thead>
                         <tr>
@@ -181,7 +209,7 @@ const ManagerFacility = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {loading ? (
+                        {loading && equipments.length === 0 ? (
                             <tr><td colSpan="4" className="text-center">Loading inventory...</td></tr>
                         ) : (
                             equipments.map(item => (
@@ -189,26 +217,60 @@ const ManagerFacility = () => {
                                     <td>{item.name}</td>
                                     <td>{item.tag || item._id.substring(item._id.length - 6).toUpperCase()}</td>
                                     <td>
-                                        <span style={{
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            backgroundColor: `${getStatusColor(item.status)}20`,
-                                            color: getStatusColor(item.status),
-                                            textTransform: 'uppercase',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 'bold'
-                                        }}>
+                                        <span className={`status-pill status-${item.status}`}>
                                             {item.status.replace(/_/g, ' ')}
                                         </span>
                                     </td>
                                     <td>
-                                        <button className="btn-edit" onClick={() => openEditModal(item)} style={{ marginRight: '10px' }}>Edit</button>
+                                        <button className="btn-edit mr-10" onClick={() => openEditModal(item)}>Edit</button>
                                         <button className="btn-delete" onClick={() => initiateDelete(item._id)}>Delete</button>
                                     </td>
                                 </tr>
                             ))
                         )}
                         {!loading && equipments.length === 0 && <tr><td colSpan="4" className="text-center">No equipment found.</td></tr>}
+                    </tbody>
+                </table>
+            </div>
+
+            <div className="section-header-flex mt-40">
+                <h2>Active Maintenance Logs</h2>
+            </div>
+
+            <div className="table-container mb-40">
+                <table className="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Equipment</th>
+                            <th>Issue</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {maintenanceLogs.length > 0 ? (
+                            maintenanceLogs.map(log => (
+                                <tr key={log._id}>
+                                    <td>{log.equipment?.name || 'Unknown Equipment'}</td>
+                                    <td>{log.description}</td>
+                                    <td>
+                                        <span className={`status-pill status-${log.status}`}>
+                                            {log.status.replace(/_/g, ' ')}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {log.status === 'pending' && (
+                                            <button className="btn-edit" onClick={() => handleUpdateMaintenanceStatus(log._id, 'in_progress')}>Start Repair</button>
+                                        )}
+                                        {log.status === 'in_progress' && (
+                                            <button className="btn-primary-small" onClick={() => handleUpdateMaintenanceStatus(log._id, 'fixed')}>Mark Fixed</button>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr><td colSpan="4" className="text-center">No active maintenance issues.</td></tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -288,27 +350,17 @@ const ManagerFacility = () => {
 
             {showDeleteModal && (
                 <div className="modal-overlay">
-                    <div className="modal-content" style={{ maxWidth: '400px' }}>
+                    <div className="modal-content delete-modal-content">
                         <div className="modal-header">
-                            <h3 style={{ color: '#dc3545' }}>Confirm Deletion</h3>
+                            <h3 className="text-danger">Confirm Deletion</h3>
                             <button className="close-btn" onClick={() => setShowDeleteModal(false)}>&times;</button>
                         </div>
-                        <div style={{ marginBottom: '25px' }}>
+                        <div className="modal-text-content">
                             <p>Are you sure you want to delete this equipment? This action cannot be undone.</p>
                         </div>
-                        <div style={{ display: 'flex', gap: '15px' }}>
-                            <button
-                                className="btn-edit full-width"
-                                onClick={() => setShowDeleteModal(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className="btn-delete full-width"
-                                onClick={confirmDelete}
-                            >
-                                Delete
-                            </button>
+                        <div className="action-row">
+                            <button className="btn-edit full-width" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                            <button className="btn-delete full-width" onClick={confirmDelete}>Delete</button>
                         </div>
                     </div>
                 </div>
