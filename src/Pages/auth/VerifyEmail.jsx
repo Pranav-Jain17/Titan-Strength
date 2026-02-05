@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../Context/AuthContext.jsx';
+import { useAuth } from '../../Context/AuthContext.jsx';
 import '../../Styles/verifyEmail.css';
 
 const VerifyEmail = () => {

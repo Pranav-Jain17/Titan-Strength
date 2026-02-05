@@ -7,15 +7,34 @@ const TrainerOverview = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const token = JSON.parse(localStorage.getItem('titanUser'))?.token;
+            const storedUser = localStorage.getItem('titanUser');
+            const token = storedUser ? JSON.parse(storedUser).token : null;
+
+            if (!token) {
+                setLoading(false);
+                return;
+            }
+
             try {
-                const res = await fetch('https://titan-strength.me/api/v1/trainers/dashboard', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                const result = await res.json();
-                if (result.success) setData(result.data);
+                const headers = { Authorization: `Bearer ${token}` };
+
+                const [statsRes, scheduleRes] = await Promise.all([
+                    fetch('https://titan-strength.me/api/v1/trainers/dashboard', { headers }),
+                    fetch('https://titan-strength.me/api/v1/dashboards/trainer', { headers })
+                ]);
+
+                const statsData = await statsRes.json();
+                const scheduleData = await scheduleRes.json();
+
+                const mergedData = {
+                    ...(statsData.success ? statsData.data : {}),
+                    ...(scheduleData.success ? scheduleData.data : {}),
+                };
+
+                setData(mergedData);
+
             } catch (err) {
-                toast.error("Failed to load dashboard");
+                toast.error("Failed to load dashboard data");
             } finally {
                 setLoading(false);
             }
@@ -39,7 +58,7 @@ const TrainerOverview = () => {
                 </div>
                 <div className="dashboard-card stat-card">
                     <h3>Pending Reviews</h3>
-                    <div className="stat-number" style={{ color: data?.pendingReviews > 0 ? '#e74c3c' : '#2ecc71' }}>
+                    <div className="stat-number" style={{ color: (data?.pendingReviews || 0) > 0 ? '#e74c3c' : '#2ecc71' }}>
                         {data?.pendingReviews || 0}
                     </div>
                     <div className="stat-label">Clients needing attention</div>
@@ -58,7 +77,19 @@ const TrainerOverview = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {data?.upcomingClasses?.length > 0 ? (
+                            {(data?.todaySchedule && data.todaySchedule.length > 0) ? (
+                                data.todaySchedule.map((cls, idx) => (
+                                    <tr key={idx}>
+                                        <td>{cls.title}</td>
+                                        <td>
+                                            {new Date(cls.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                            {' - '}
+                                            {new Date(cls.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </td>
+                                        <td>{cls.capacity} Max</td>
+                                    </tr>
+                                ))
+                            ) : (data?.upcomingClasses && data.upcomingClasses.length > 0) ? (
                                 data.upcomingClasses.map((cls, idx) => (
                                     <tr key={idx}>
                                         <td>{cls.title}</td>
@@ -71,7 +102,9 @@ const TrainerOverview = () => {
                                     </tr>
                                 ))
                             ) : (
-                                <tr><td colSpan="3" style={{ textAlign: 'center', padding: '2rem' }}>No classes today</td></tr>
+                                <tr><td colSpan="3" style={{ textAlign: 'center', padding: '2rem' }}>
+                                    {data?.messages || "No classes scheduled today"}
+                                </td></tr>
                             )}
                         </tbody>
                     </table>

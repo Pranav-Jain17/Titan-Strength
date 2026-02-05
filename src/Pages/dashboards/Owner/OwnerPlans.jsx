@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import './ownerPlans.css';
 
 const OwnerPlans = () => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(false);
+    
     const [showModal, setShowModal] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentId, setCurrentId] = useState(null);
+    
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
+
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [viewPlan, setViewPlan] = useState(null);
 
     const [formData, setFormData] = useState({
         name: '', price: '', durationDays: '', description: ''
@@ -34,6 +40,21 @@ const OwnerPlans = () => {
             toast.error("Failed to load plans");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchPlanDetails = async (id) => {
+        try {
+            const response = await fetch(`https://titan-strength.me/api/v1/plans/${id}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (data.success) {
+                setViewPlan(data.data);
+                setShowDetailsModal(true);
+            }
+        } catch (error) {
+            toast.error("Failed to load plan details");
         }
     };
 
@@ -64,6 +85,11 @@ const OwnerPlans = () => {
         setShowModal(false);
         setIsEditMode(false);
         setCurrentId(null);
+    };
+
+    const closeDetailsModal = () => {
+        setShowDetailsModal(false);
+        setViewPlan(null);
     };
 
     const handleSubmit = async (e) => {
@@ -142,6 +168,7 @@ const OwnerPlans = () => {
                                     <p><strong>Description:</strong> {plan.description?.substring(0, 50)}...</p>
                                 </div>
                                 <div className="card-actions">
+                                    <button className="btn-secondary" onClick={() => fetchPlanDetails(plan._id)}>View</button>
                                     <button className="btn-edit" onClick={() => openModal(plan)}>Edit</button>
                                     <button className="btn-delete" onClick={() => initiateDelete(plan._id)}>Delete</button>
                                 </div>
@@ -155,19 +182,60 @@ const OwnerPlans = () => {
             {showModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <div className="modal-header">
-                            <h3>{isEditMode ? 'Edit' : 'Add New'} Plan</h3>
-                            <button className="close-btn" onClick={closeModal}>&times;</button>
-                        </div>
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-group"><label>Plan Name</label><input type="text" name="name" className="form-input" value={formData.name} onChange={handleInputChange} required /></div>
-                            <div className="form-row">
-                                <div className="form-group"><label>Price ($)</label><input type="number" name="price" className="form-input" value={formData.price} onChange={handleInputChange} required /></div>
-                                <div className="form-group"><label>Duration (Days)</label><input type="number" name="durationDays" className="form-input" value={formData.durationDays} onChange={handleInputChange} required /></div>
+                        <div className="modal-header-modern">
+                            <div className="header-title">
+                                <h3>{isEditMode ? 'Edit' : 'Add New'} Plan</h3>
                             </div>
-                            <div className="form-group"><label>Description / Features</label><textarea name="description" className="form-input" value={formData.description} onChange={handleInputChange} rows="4" /></div>
-                            <button type="submit" className="btn-primary-large full-width form-submit-btn">{isEditMode ? 'Update' : 'Create'} Plan</button>
-                        </form>
+                            <button className="close-btn-modern" onClick={closeModal}>&times;</button>
+                        </div>
+                        <div className="modal-body-content">
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-group"><label>Plan Name</label><input type="text" name="name" className="form-input" value={formData.name} onChange={handleInputChange} required /></div>
+                                <div className="form-row">
+                                    <div className="form-group"><label>Price ($)</label><input type="number" name="price" className="form-input" value={formData.price} onChange={handleInputChange} required /></div>
+                                    <div className="form-group"><label>Duration (Days)</label><input type="number" name="durationDays" className="form-input" value={formData.durationDays} onChange={handleInputChange} required /></div>
+                                </div>
+                                <div className="form-group"><label>Description / Features</label><textarea name="description" className="form-input" value={formData.description} onChange={handleInputChange} rows="4" /></div>
+                                <button type="submit" className="btn-primary-large full-width form-submit-btn">{isEditMode ? 'Update' : 'Create'} Plan</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDetailsModal && viewPlan && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <div className="modal-header-modern">
+                            <div className="header-title">
+                                <h3>{viewPlan.name}</h3>
+                                <span className="status-badge-pill active">Active Plan</span>
+                            </div>
+                            <button className="close-btn-modern" onClick={closeDetailsModal}>&times;</button>
+                        </div>
+
+                        <div className="modal-body-content">
+                            <div className="info-grid">
+                                <div className="info-item">
+                                    <label>Price</label>
+                                    <div className="info-value manager-highlight">${viewPlan.price}</div>
+                                </div>
+                                <div className="info-item">
+                                    <label>Duration</label>
+                                    <div className="info-value">{viewPlan.durationDays} Days</div>
+                                </div>
+                                <div className="info-item full-width">
+                                    <label>Description & Features</label>
+                                    <div className="info-value" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                                        {viewPlan.description || 'No description provided.'}
+                                    </div>
+                                </div>
+                                <div className="info-item full-width">
+                                    <label>Plan ID</label>
+                                    <div className="info-sub">{viewPlan._id}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
@@ -175,11 +243,15 @@ const OwnerPlans = () => {
             {showDeleteModal && (
                 <div className="modal-overlay">
                     <div className="modal-content confirm-modal-content">
-                        <h3>Confirm Deletion</h3>
-                        <p className="confirm-text">Are you sure you want to delete this plan? This action cannot be undone.</p>
-                        <div className="confirm-actions">
-                            <button onClick={() => setShowDeleteModal(false)} className="btn-edit">Cancel</button>
-                            <button onClick={confirmDelete} className="btn-delete">Delete</button>
+                        <div className="modal-header-modern">
+                            <div className="header-title"><h3>Confirm Deletion</h3></div>
+                        </div>
+                        <div className="modal-body-content">
+                            <p className="confirm-text">Are you sure you want to delete this plan? This action cannot be undone.</p>
+                            <div className="confirm-actions">
+                                <button onClick={() => setShowDeleteModal(false)} className="btn-edit">Cancel</button>
+                                <button onClick={confirmDelete} className="btn-delete">Delete</button>
+                            </div>
                         </div>
                     </div>
                 </div>

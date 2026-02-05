@@ -20,19 +20,24 @@ const MemberHome = () => {
 
             try {
                 const headers = { Authorization: `Bearer ${token}` };
-                const [meRes, subRes, statsRes, dietRes] = await Promise.all([
+
+                const [meRes, dashboardRes, statsRes, dietRes] = await Promise.all([
                     fetch('https://titan-strength.me/api/v1/members/me', { headers }),
-                    fetch('https://titan-strength.me/api/v1/members/subscription', { headers }),
+                    fetch('https://titan-strength.me/api/v1/dashboards/member', { headers }),
                     fetch('https://titan-strength.me/api/v1/members/stats', { headers }),
                     fetch('https://titan-strength.me/api/v1/content/diets/my-plan', { headers })
                 ]);
 
-                const [meData, subData, statsData, dietData] = await Promise.all([
-                    meRes.json(), subRes.json(), statsRes.json(), dietRes.json()
+                const [meData, dashboardData, statsData, dietData] = await Promise.all([
+                    meRes.json(), dashboardRes.json(), statsRes.json(), dietRes.json()
                 ]);
 
                 if (meData.success) setProfile(meData.data);
-                if (subData.success) setSubscription(subData.data);
+
+                if (dashboardData.success && dashboardData.data.membership) {
+                    setSubscription(dashboardData.data.membership);
+                }
+
                 if (statsData.success) setStats(statsData.data);
                 if (dietData.success) setDiet(dietData.data);
 
@@ -71,8 +76,12 @@ const MemberHome = () => {
                     {subscription ? (
                         <>
                             <div className="plan-name">{subscription.planName}</div>
-                            <span className={`status-badge ${subscription.status}`}>{subscription.status}</span>
-                            <p className="expiry-text">Valid until {new Date(subscription.endDate).toLocaleDateString()}</p>
+                            <span className={`status-badge ${subscription.status.toLowerCase()}`}>
+                                {subscription.status}
+                            </span>
+                            <p className="expiry-text">
+                                Valid until {new Date(subscription.expiresOn).toLocaleDateString()}
+                            </p>
                         </>
                     ) : (
                         <>
