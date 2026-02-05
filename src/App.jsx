@@ -16,6 +16,7 @@ import OwnerDashboard from './Pages/dashboards/Owner/OwnerDashboard.jsx';
 import TrainerDashboard from '../src/Pages/dashboards/Trainer/TrainerDashboard.jsx';
 import MemberDashboard from './Pages/dashboards/Member/MemberDashboard.jsx';
 import UserDashboard from '../src/Pages/dashboards/User/UserDashboard.jsx';
+import VerifyEmail from './Pages/auth/VerifyEmail.jsx';
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/api/v1/auth/verify-email/:token" element={<VerifyEmail />} />
 
         <Route element={<ProtectedRoute allowedRoles={['owner']} />}>
           <Route path="/owner/dashboard" element={<OwnerDashboard />} />

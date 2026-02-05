@@ -4,7 +4,6 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const backendUrl = 'https://titan-strength.me';
-
     const apiBase = `${backendUrl}/api/v1/auth`;
 
     const [user, setUser] = useState(() => {
@@ -12,7 +11,6 @@ export const AuthProvider = ({ children }) => {
             const storedUser = localStorage.getItem('titanUser');
             return storedUser ? JSON.parse(storedUser) : null;
         } catch (error) {
-            console.error("Error parsing user from local storage", error);
             return null;
         }
     });
@@ -25,11 +23,16 @@ export const AuthProvider = ({ children }) => {
 
     const [loading, setLoading] = useState(false);
 
-    const login = (userData, token) => {
+    const login = (userData, separateToken) => {
+        const token = userData.token || separateToken;
+
         setUser(userData);
         setIsLoggedin(true);
         localStorage.setItem('titanUser', JSON.stringify(userData));
-        if (token) localStorage.setItem('loginToken', token);
+
+        if (token) {
+            localStorage.setItem('loginToken', token);
+        }
     };
 
     const logout = async () => {
@@ -37,17 +40,18 @@ export const AuthProvider = ({ children }) => {
         try {
             const token = localStorage.getItem('loginToken');
 
-            await fetch(`${apiBase}/logout`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            });
-
+            if (token) {
+                await fetch(`${apiBase}/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+            }
         } catch (error) {
-            console.error("Backend logout failed:", error);
+            console.error(error);
         } finally {
             setUser(null);
             setIsLoggedin(false);
@@ -75,7 +79,6 @@ export const AuthProvider = ({ children }) => {
 
             return data;
         } catch (error) {
-            console.error("Verification error:", error);
             throw error;
         } finally {
             setLoading(false);

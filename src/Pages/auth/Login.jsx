@@ -15,8 +15,7 @@ const Login = () => {
 
     useEffect(() => {
         if (isLoggedin && user) {
-            const role = user.role || 'member';
-            navigate('/', { replace: true });;
+            navigate('/', { replace: true });
         }
     }, [isLoggedin, user, navigate]);
 
