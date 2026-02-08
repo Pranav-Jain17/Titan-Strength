@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
 import './userDashboard.css';
+import Plans from './Plans';
 
 const UserDashboard = () => {
     const [user, setUser] = useState(null);
@@ -34,10 +34,6 @@ const UserDashboard = () => {
         fetchData();
     }, []);
 
-    const handleSubscribe = (planId, planName) => {
-        toast.info(`Redirecting to payment for ${planName}...`);
-    };
-
     if (loading) return <div className="loading-screen">Loading your experience...</div>;
 
     return (
@@ -70,66 +66,7 @@ const UserDashboard = () => {
                     </div>
                 </section>
 
-                <section className="onboarding-section">
-                    <h2>2. Choose your Membership</h2>
-                    <div className="plans-grid">
-                        {plans.length > 0 ? plans.map((plan) => {
-                            const isStandard = plan.name === 'Standard';
-                            return (
-                                <div
-                                    key={plan._id}
-                                    className={`plan-card ${isStandard ? 'highlighted' : ''}`}
-                                >
-                                    {isStandard && (
-                                        <div className="best-offer-badge">Best Offer</div>
-                                    )}
-
-                                    <div className="plan-header">
-                                        <h3>{plan.name}</h3>
-                                        <div className="price">
-                                            ${plan.price}<span className="duration">/mo</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="plan-divider"></div>
-
-                                    <ul className="plan-features">
-                                        <li>Access to Gym Equipment</li>
-                                        <li>Locker Access</li>
-                                        <li>Free Wifi</li>
-
-                                        {plan.features.includesPersonalTraining && (
-                                            <li>Personal Trainer</li>
-                                        )}
-
-                                        {plan.features.canBookClasses && (
-                                            <li>Up to {plan.features.maxClassesPerWeek} Classes/Week</li>
-                                        )}
-
-                                        {plan.features.accessAllBranches && (
-                                            <li>Access All Branches</li>
-                                        )}
-
-                                        {plan.description && plan.description.split(/,|\n/).map((feature, i) => (
-                                            feature.trim() && !feature.toLowerCase().includes('trainer') && !feature.toLowerCase().includes('classes') && (
-                                                <li key={i}>{feature.trim()}</li>
-                                            )
-                                        ))}
-                                    </ul>
-
-                                    <button
-                                        className="btn-choose-plan"
-                                        onClick={() => handleSubscribe(plan._id, plan.name)}
-                                    >
-                                        CHOOSE PLAN
-                                    </button>
-                                </div>
-                            );
-                        }) : (
-                            <p className="no-plans">No plans available at the moment.</p>
-                        )}
-                    </div>
-                </section>
+                <Plans plans={plans} user={user} />
 
                 <section className="onboarding-section">
                     <h2>3. Find your Home Gym</h2>

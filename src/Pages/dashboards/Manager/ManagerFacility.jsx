@@ -44,15 +44,15 @@ const ManagerFacility = () => {
     const fetchMaintenance = async () => {
         const token = getAuthToken();
         try {
-            const res = await fetch('https://titan-strength.me/api/v1/manager/maintenance', {
+            const res = await fetch('https://titan-strength.me/api/v1/manager/equipment?status=maintenance', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await res.json();
             if (data.success) {
-                setMaintenanceLogs(data.data.filter(log => log.status !== 'fixed'));
+                setMaintenanceLogs(data.data);
             }
         } catch (error) {
-            console.warn("Maintenance logs could not be loaded (API might be missing)");
+            console.warn("Maintenance logs could not be loaded");
         }
     };
 
@@ -251,8 +251,8 @@ const ManagerFacility = () => {
                         {maintenanceLogs.length > 0 ? (
                             maintenanceLogs.map(log => (
                                 <tr key={log._id}>
-                                    <td>{log.equipment?.name || 'Unknown Equipment'}</td>
-                                    <td>{log.description}</td>
+                                    <td>{log.name || log.equipment?.name || 'Unknown Equipment'}</td>
+                                    <td>{log.description || 'Maintenance Status Active'}</td>
                                     <td>
                                         <span className={`status-pill status-${log.status}`}>
                                             {log.status.replace(/_/g, ' ')}
@@ -264,6 +264,9 @@ const ManagerFacility = () => {
                                         )}
                                         {log.status === 'in_progress' && (
                                             <button className="btn-primary-small" onClick={() => handleUpdateMaintenanceStatus(log._id, 'fixed')}>Mark Fixed</button>
+                                        )}
+                                        {log.status === 'maintenance' && (
+                                            <button className="btn-primary-small" onClick={() => openEditModal(log)}>Manage</button>
                                         )}
                                     </td>
                                 </tr>
