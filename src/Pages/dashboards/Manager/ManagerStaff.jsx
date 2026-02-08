@@ -31,11 +31,14 @@ const ManagerStaff = () => {
     const fetchUsers = async () => {
         const token = getAuthToken();
         try {
-            const res = await fetch('https://titan-strength.me/api/v1/manager/users', {
+            const res = await fetch('https://titan-strength.me/api/v1/users', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await res.json();
-            if (data.success) setUsers(data.data);
+            if (data.success) {
+                const membersOnly = data.data.filter(user => user.role === 'member');
+                setUsers(membersOnly);
+            }
         } catch (err) {
             console.error("Failed to load users");
         }

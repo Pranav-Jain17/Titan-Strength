@@ -34,7 +34,7 @@ const MemberContent = () => {
     return (
         <section className="dashboard-section">
             <div className="section-header-flex">
-                <h2>Member Resources</h2>
+                <h2>Resource Library</h2>
                 <div className="toggle-group">
                     <button
                         className={`btn-toggle ${activeTab === 'videos' ? 'active' : ''}`}
@@ -43,39 +43,47 @@ const MemberContent = () => {
                     <button
                         className={`btn-toggle ${activeTab === 'diets' ? 'active' : ''}`}
                         onClick={() => setActiveTab('diets')}
-                    >Diet Plans</button>
+                    >Diet Templates</button>
                 </div>
             </div>
 
-            {loading ? <div className="loading-container">Loading Content...</div> : (
+            {loading ? <div className="loading-container"><div className="spinner"></div></div> : (
                 <div className="cards-grid">
                     {items.length > 0 ? items.map((item, idx) => (
                         <div key={item._id || idx} className="dashboard-card">
                             {activeTab === 'videos' ? (
                                 <>
                                     <div className="video-placeholder">
-                                        <span>▶️</span>
+                                        {item.url ? (
+                                            <video src={item.url} controls className="video-thumbnail" preload="metadata" />
+                                        ) : (
+                                            <span>▶️</span>
+                                        )}
                                     </div>
-                                    <h3 className="class-title">{item.title}</h3>
-                                    <p className="content-desc">{item.description}</p>
-                                    <span className="video-meta">
-                                        {item.category || 'General'} • {item.duration ? `${item.duration} mins` : 'Video'}
-                                    </span>
+                                    <div className="card-body">
+                                        <h3 className="class-title">{item.title}</h3>
+                                        <p className="content-desc">{item.description}</p>
+                                        <div className="tag-container">
+                                            {item.tags?.map(tag => <span key={tag} className="video-tag">#{tag}</span>)}
+                                        </div>
+                                    </div>
                                 </>
                             ) : (
-                                <>
-                                    <h3 className="text-highlight">{item.name}</h3>
-                                    <span className="status-badge active">{item.goalType}</span>
-                                    <p className="content-desc">{item.description}</p>
-                                    <div className="diet-includes">
-                                        <strong>Includes:</strong>
-                                        <p className="text-note">Daily macro breakdown & meal suggestions</p>
+                                <div className="card-body">
+                                    <div className="card-header-flex">
+                                        <h3 className="text-highlight">{item.name}</h3>
+                                        <span className="status-badge active">{item.goalType}</span>
                                     </div>
-                                </>
+                                    <p className="content-desc">{item.description}</p>
+                                    <div className="diet-meta">
+                                        {item.calories && <span className="video-tag">🔥 {item.calories} cal</span>}
+                                        {item.protein && <span className="video-tag">🥩 {item.protein}g protein</span>}
+                                    </div>
+                                </div>
                             )}
                         </div>
                     )) : (
-                        <div className="empty-state">No {activeTab} available yet.</div>
+                        <div className="empty-state">No {activeTab} found in library.</div>
                     )}
                 </div>
             )}

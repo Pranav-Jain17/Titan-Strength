@@ -1,58 +1,80 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
-const TrainerClientDetail = ({ clientId, onBack }) => {
-    const [client, setClient] = useState(null);
-    const [progress, setProgress] = useState([]);
+const TrainerClientDetail = ({ videos = [] }) => {
+    const [viewMode, setViewMode] = useState('list');
+    const [selectedClientId, setSelectedClientId] = useState(null);
+    const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    const [clientProfile, setClientProfile] = useState(null);
+    const [clientProgress, setClientProgress] = useState([]);
+    const [loadingProfile, setLoadingProfile] = useState(false);
     const [activeTab, setActiveTab] = useState('progress');
     const [showProgressModal, setShowProgressModal] = useState(false);
 
-    // Forms
     const [progressForm, setProgressForm] = useState({ weight: '', bodyFatPercent: '', bicepSize: '', notes: '' });
     const [dietForm, setDietForm] = useState({ dietId: '', customPlan: '', notes: '' });
     const [workoutForm, setWorkoutForm] = useState({ videoId: '', customPlan: '', notes: '' });
 
-    // Available Options
-    const [diets, setDiets] = useState([]);
-    const [videos, setVideos] = useState([]);
-
     const getToken = () => JSON.parse(localStorage.getItem('titanUser'))?.token;
 
     useEffect(() => {
-        const fetchAll = async () => {
-            const token = getToken();
+        const fetchClients = async () => {
             try {
-                const [profileRes, progressRes, dietsRes, videosRes] = await Promise.all([
-                    fetch(`https://titan-strength.me/api/v1/trainers/clients/${clientId}`, { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch(`https://titan-strength.me/api/v1/trainers/clients/${clientId}/progress`, { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch(`https://titan-strength.me/api/v1/content/diets`, { headers: { Authorization: `Bearer ${token}` } }),
-                    fetch(`https://titan-strength.me/api/v1/content/videos`, { headers: { Authorization: `Bearer ${token}` } })
-                ]);
+                const res = await fetch('https://titan-strength.me/api/v1/trainers/clients', {
+                    headers: { Authorization: `Bearer ${getToken()}` }
+                });
+                const result = await res.json();
 
-                const pData = await profileRes.json();
-                const progData = await progressRes.json();
-                const dData = await dietsRes.json();
-                const vData = await videosRes.json();
-
-                if (pData.success) setClient(pData.data);
-                if (progData.success) setProgress(progData.data);
-                if (dData.success) setDiets(dData.data);
-                if (vData.success) setVideos(vData.data);
-
+                if (result.success) {
+                    setClients(result.data);
+                }
             } catch (err) {
-                toast.error("Error loading client data");
+                toast.error("Failed to load client roster");
             } finally {
                 setLoading(false);
             }
         };
-        fetchAll();
-    }, [clientId]);
+        fetchClients();
+    }, []);
+
+    const handleSelectClient = useCallback(async (clientId) => {
+        setLoadingProfile(true);
+        setSelectedClientId(clientId);
+        setViewMode('detail');
+        const token = getToken();
+
+        try {
+            const [profileRes, progressRes] = await Promise.all([
+                fetch(`https://titan-strength.me/api/v1/trainers/clients/${clientId}`, { headers: { Authorization: `Bearer ${token}` } }),
+                fetch(`https://titan-strength.me/api/v1/trainers/clients/${clientId}/progress`, { headers: { Authorization: `Bearer ${token}` } })
+            ]);
+
+            const pData = await profileRes.json();
+            const progData = await progressRes.json();
+
+            if (pData.success) setClientProfile(pData.data);
+            if (progData.success) setClientProgress(progData.data);
+        } catch (err) {
+            toast.error("Error loading client profile");
+            setViewMode('list');
+        } finally {
+            setLoadingProfile(false);
+        }
+    }, []);
+
+    const handleBackToList = () => {
+        setSelectedClientId(null);
+        setClientProfile(null);
+        setClientProgress([]);
+        setViewMode('list');
+    };
 
     const handleAddProgress = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch(`https://titan-strength.me/api/v1/trainers/clients/${clientId}/progress`, {
+            const res = await fetch(`https://titan-strength.me/api/v1/trainers/clients/${selectedClientId}/progress`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
                 body: JSON.stringify(progressForm)
@@ -60,7 +82,7 @@ const TrainerClientDetail = ({ clientId, onBack }) => {
             const result = await res.json();
             if (result.success) {
                 toast.success("Progress logged");
-                setProgress([result.data, ...progress]);
+                setClientProgress([result.data, ...clientProgress]);
                 setShowProgressModal(false);
                 setProgressForm({ weight: '', bodyFatPercent: '', bicepSize: '', notes: '' });
             }
@@ -71,8 +93,14 @@ const TrainerClientDetail = ({ clientId, onBack }) => {
 
     const handleAssignDiet = async (e) => {
         e.preventDefault();
+
+        if (!dietForm.dietId && !dietForm.customPlan) {
+            toast.warn("Please enter a Diet ID or a Custom Plan");
+            return;
+        }
+
         try {
-            const res = await fetch(`https://titan-strength.me/api/v1/trainers/clients/${clientId}/assign-diet`, {
+            const res = await fetch(`https://titan-strength.me/api/v1/trainers/clients/${selectedClientId}/assign-diet`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
                 body: JSON.stringify(dietForm)
@@ -86,8 +114,14 @@ const TrainerClientDetail = ({ clientId, onBack }) => {
 
     const handleAssignWorkout = async (e) => {
         e.preventDefault();
+
+        if (!workoutForm.videoId && !workoutForm.customPlan) {
+            toast.warn("Please select a Video or enter a Custom Routine");
+            return;
+        }
+
         try {
-            const res = await fetch(`https://titan-strength.me/api/v1/trainers/clients/${clientId}/assign-workout`, {
+            const res = await fetch(`https://titan-strength.me/api/v1/trainers/clients/${selectedClientId}/assign-workout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
                 body: JSON.stringify(workoutForm)
@@ -99,23 +133,68 @@ const TrainerClientDetail = ({ clientId, onBack }) => {
         }
     };
 
-    if (loading) return <div className="loading-container">Loading Profile...</div>;
+    if (loading) return <div className="loading-container"><div className="spinner"></div><p>Loading Roster...</p></div>;
+
+    if (viewMode === 'list') {
+        return (
+            <section className="dashboard-section">
+                <div className="section-header-flex">
+                    <h2>Assigned Clients</h2>
+                </div>
+                <div className="table-container">
+                    <table className="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Goal</th>
+                                <th>Branch</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {clients.length > 0 ? clients.map(c => (
+                                <tr key={c.assignmentId}>
+                                    <td>
+                                        <strong>{c.member?.name}</strong><br />
+                                        <small style={{ color: '#888' }}>{c.member?.email}</small>
+                                    </td>
+                                    <td>{c.member?.goal || 'N/A'}</td>
+                                    <td>{c.member?.homeBranch?.name || 'Main'}</td>
+                                    <td><span className={`status-badge ${c.active ? 'active' : 'inactive'}`}>{c.active ? 'Active' : 'Inactive'}</span></td>
+                                    <td>
+                                        <button className="btn-primary" onClick={() => handleSelectClient(c.member._id)}>
+                                            Manage
+                                        </button>
+                                    </td>
+                                </tr>
+                            )) : (
+                                <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No clients assigned</td></tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        );
+    }
+
+    if (loadingProfile) return <div className="loading-container"><div className="spinner"></div><p>Loading Profile...</p></div>;
 
     return (
         <section className="dashboard-section">
             <div style={{ marginBottom: '1rem' }}>
-                <button onClick={onBack} className="btn-secondary">← Back to Roster</button>
+                <button onClick={handleBackToList} className="btn-secondary">← Back to Roster</button>
             </div>
 
             <div className="dashboard-card client-header">
-                <div className="client-avatar">{client?.name?.charAt(0)}</div>
+                <div className="client-avatar">{clientProfile?.name?.charAt(0)}</div>
                 <div className="client-info">
-                    <h2>{client?.name}</h2>
+                    <h2>{clientProfile?.name}</h2>
                     <div className="client-meta">
-                        <span>📧 {client?.email}</span>
-                        <span>🎯 {client?.goal}</span>
-                        <span>⚖️ {client?.currentWeight || '--'} kg</span>
-                        <span>🏢 {client?.homeBranch?.name || 'Main Branch'}</span>
+                        <span> Email: {clientProfile?.email}</span>
+                        <span> Goal: {clientProfile?.goal}</span>
+                        <span> Weight: {clientProfile?.currentWeight || '--'} kg</span>
+                        <span> Branch: {clientProfile?.homeBranch?.name || 'Main Branch'}</span>
                     </div>
                 </div>
             </div>
@@ -142,7 +221,7 @@ const TrainerClientDetail = ({ clientId, onBack }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {progress.length > 0 ? progress.map(p => (
+                                {clientProgress.length > 0 ? clientProgress.map(p => (
                                     <tr key={p._id}>
                                         <td>{new Date(p.date).toLocaleDateString()}</td>
                                         <td>{p.weight || '-'}</td>
@@ -163,11 +242,14 @@ const TrainerClientDetail = ({ clientId, onBack }) => {
                         <h3>Assign Nutrition</h3>
                         <form onSubmit={handleAssignDiet}>
                             <div className="form-group">
-                                <label className="form-label">Select Plan</label>
-                                <select className="form-select" value={dietForm.dietId} onChange={e => setDietForm({ ...dietForm, dietId: e.target.value })}>
-                                    <option value="">-- Choose Standard Plan --</option>
-                                    {diets.map(d => <option key={d._id} value={d._id}>{d.name} ({d.goalType})</option>)}
-                                </select>
+                                <label className="form-label">Diet Plan ID</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="Enter Diet ID"
+                                    value={dietForm.dietId}
+                                    onChange={e => setDietForm({ ...dietForm, dietId: e.target.value })}
+                                />
                             </div>
                             <div className="form-group">
                                 <label className="form-label">Or Custom Plan</label>
