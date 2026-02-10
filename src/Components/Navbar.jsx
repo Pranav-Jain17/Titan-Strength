@@ -12,12 +12,34 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const [activeModal, setActiveModal] = useState(null);
+    const [avatarUrl, setAvatarUrl] = useState(null);
     const dropdownRef = useRef(null);
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
     const closeMenu = () => setIsMenuOpen(false);
 
     const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
+
+    // Fetch latest avatar (signed URL) on mount
+    useEffect(() => {
+        const fetchAvatar = async () => {
+            if (!userData) return;
+            try {
+                const token = JSON.parse(localStorage.getItem('titanUser'))?.token;
+                const res = await fetch('https://titan-strength.me/api/v1/users/avatar', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success && data.data.photoUrl) {
+                    setAvatarUrl(data.data.photoUrl);
+                }
+            } catch (error) {
+                console.error("Failed to fetch avatar", error);
+            }
+        };
+
+        fetchAvatar();
+    }, [userData]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -84,13 +106,14 @@ const Navbar = () => {
                 <NavLink key="dash" to="/member/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>
             ];
         } else {
-            // Default Role: 'user'
             return [
                 ...commonLinks,
                 <NavLink key="dash" to="/user/dashboard" onClick={closeMenu} className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Dashboard</NavLink>
             ];
         }
     };
+
+    const displayUser = userData ? { ...userData, photoUrl: avatarUrl || userData.photoUrl } : null;
 
     return (
         <>
@@ -107,9 +130,17 @@ const Navbar = () => {
                                 {renderNavLinks()}
                                 <div className="nav-profile-container" ref={dropdownRef}>
                                     <div className="profile-icon-btn" onClick={toggleProfileDropdown}>
-                                        <div className="profile-initial">
-                                            {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
-                                        </div>
+                                        {displayUser.photoUrl ? (
+                                            <img
+                                                src={displayUser.photoUrl}
+                                                alt="Profile"
+                                                style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <div className="profile-initial">
+                                                {userData.name ? userData.name.charAt(0).toUpperCase() : 'U'}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className={`profile-dropdown ${isProfileDropdownOpen ? 'show' : ''}`}>
@@ -166,7 +197,7 @@ const Navbar = () => {
             <DashboardModals
                 type={activeModal}
                 onClose={() => setActiveModal(null)}
-                user={userData}
+                user={displayUser || userData}
             />
         </>
     );
