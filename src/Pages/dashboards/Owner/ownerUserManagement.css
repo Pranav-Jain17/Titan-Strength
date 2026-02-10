@@ -8,6 +8,80 @@
     --text-muted: #ccc;
     --success: #28a745;
     --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #17a2b8;
+}
+
+.dashboard-section {
+    padding: 0;
+}
+
+.section-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.header-title h2 {
+    margin: 0;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 5px;
+    background: #111;
+    padding: 4px;
+    border-radius: 30px;
+    border: 1px solid var(--border);
+}
+
+.filter-tab {
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-tab:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.filter-tab.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.search-form {
+    display: flex;
+}
+
+.search-input {
+    background: #111;
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: #fff;
+    outline: none;
+    font-size: 0.9rem;
+    width: 200px;
+}
+
+.search-input:focus {
+    border-color: var(--primary);
 }
 
 .table-container {
@@ -78,16 +152,34 @@
     display: inline-block;
 }
 
-.status-badge.active {
+.status-badge.owner {
+    background: rgba(242, 95, 41, 0.2);
+    color: var(--primary);
+    border: 1px solid rgba(242, 95, 41, 0.3);
+}
+
+.status-badge.manager {
+    background: rgba(155, 89, 182, 0.2);
+    color: #9b59b6;
+    border: 1px solid rgba(155, 89, 182, 0.3);
+}
+
+.status-badge.trainer {
+    background: rgba(23, 162, 184, 0.2);
+    color: var(--info);
+    border: 1px solid rgba(23, 162, 184, 0.3);
+}
+
+.status-badge.member {
     background: rgba(40, 167, 69, 0.2);
     color: var(--success);
     border: 1px solid rgba(40, 167, 69, 0.3);
 }
 
-.status-badge.inactive {
-    background: rgba(220, 53, 69, 0.2);
-    color: var(--danger);
-    border: 1px solid rgba(220, 53, 69, 0.3);
+.status-badge.user {
+    background: rgba(108, 117, 125, 0.2);
+    color: #ccc;
+    border: 1px solid rgba(108, 117, 125, 0.3);
 }
 
 .btn-secondary {
@@ -226,6 +318,33 @@
     background: rgba(40, 167, 69, 0.15);
     color: var(--success);
     border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+@media (max-width: 900px) {
+    .section-header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-controls {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .filter-tabs {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: none;
+        /* Firefox */
+    }
+
+    .filter-tabs::-webkit-scrollbar {
+        display: none;
+        /* Safari and Chrome */
+    }
 }
 
 @media (max-width: 600px) {

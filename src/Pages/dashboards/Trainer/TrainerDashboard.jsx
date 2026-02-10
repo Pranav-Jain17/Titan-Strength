@@ -4,6 +4,7 @@ import TrainerOverview from './TrainerOverview.jsx';
 import TrainerSchedule from './TrainerSchedule.jsx';
 import TrainerContent from './TrainerContent.jsx';
 import TrainerClientDetail from './TrainerClientDetail.jsx';
+import TrainerClasses from './TrainerClasses.jsx';
 
 const TrainerDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -32,6 +33,7 @@ const TrainerDashboard = () => {
         switch (activeTab) {
             case 'overview': return <TrainerOverview />;
             case 'schedule': return <TrainerSchedule />;
+            case 'classes': return <TrainerClasses />;
             case 'clientDetail':
                 return <TrainerClientDetail videos={videos} />;
             case 'content': return <TrainerContent />;
@@ -45,6 +47,7 @@ const TrainerDashboard = () => {
                 <ul>
                     <li className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</li>
                     <li className={activeTab === 'schedule' ? 'active' : ''} onClick={() => setActiveTab('schedule')}>Schedule</li>
+                    <li className={activeTab === 'classes' ? 'active' : ''} onClick={() => setActiveTab('classes')}>Classes</li>
                     <li className={activeTab === 'clientDetail' ? 'active' : ''} onClick={() => setActiveTab('clientDetail')}>Client Detail</li>
                     <li className={activeTab === 'content' ? 'active' : ''} onClick={() => setActiveTab('content')}>Content</li>
                 </ul>

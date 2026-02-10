@@ -5,7 +5,6 @@ import ManagerDailyOps from './ManagerDailyOps.jsx';
 import ManagerMembers from './ManagerMembers.jsx';
 import ManagerFacility from './ManagerFacility.jsx';
 import ManagerStaff from './ManagerStaff.jsx';
-import ManagerClasses from './ManagerClasses.jsx';
 import ManagerSubscriptions from './ManagerSubscriptions.jsx';
 
 const ManagerDashboard = () => {
@@ -14,7 +13,6 @@ const ManagerDashboard = () => {
     const renderContent = () => {
         switch (activeTab) {
             case 'overview': return <ManagerOverview />;
-            case 'classes': return <ManagerClasses />;
             case 'dailyops': return <ManagerDailyOps />;
             case 'members': return <ManagerMembers />;
             case 'facility': return <ManagerFacility />;
@@ -29,7 +27,6 @@ const ManagerDashboard = () => {
             <nav className="manager-nav">
                 <ul>
                     <li className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>Overview</li>
-                    <li className={activeTab === 'classes' ? 'active' : ''} onClick={() => setActiveTab('classes')}>Classes</li>
                     <li className={activeTab === 'dailyops' ? 'active' : ''} onClick={() => setActiveTab('dailyops')}>Daily Ops</li>
                     <li className={activeTab === 'members' ? 'active' : ''} onClick={() => setActiveTab('members')}>Members</li>
                     <li className={activeTab === 'facility' ? 'active' : ''} onClick={() => setActiveTab('facility')}>Facility</li>

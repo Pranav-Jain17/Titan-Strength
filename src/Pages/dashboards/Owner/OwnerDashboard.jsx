@@ -6,6 +6,8 @@ import OwnerPlans from './OwnerPlans.jsx';
 import OwnerUserManagement from './OwnerUserManagement.jsx';
 import OwnerSubscriptions from './OwnerSubscriptions.jsx';
 import OwnerManagers from './OwnerManagers.jsx';
+import OwnerTrainers from './OwnerTrainers.jsx';
+import OwnerMembers from './OwnerMembers.jsx';
 
 const OwnerDashboard = () => {
     const [activeTab, setActiveTab] = useState('overview');
@@ -18,6 +20,10 @@ const OwnerDashboard = () => {
                 return <OwnerBranches />;
             case 'managers':
                 return <OwnerManagers />;
+            case 'trainers':
+                return <OwnerTrainers />;
+            case 'members':
+                return <OwnerMembers />;
             case 'plans':
                 return <OwnerPlans />;
             case 'users':
@@ -51,6 +57,18 @@ const OwnerDashboard = () => {
                         onClick={() => setActiveTab('managers')}
                     >
                         Managers
+                    </li>
+                    <li
+                        className={activeTab === 'trainers' ? 'active-tab' : ''}
+                        onClick={() => setActiveTab('trainers')}
+                    >
+                        Trainers
+                    </li>
+                    <li
+                        className={activeTab === 'members' ? 'active-tab' : ''}
+                        onClick={() => setActiveTab('members')}
+                    >
+                        Members
                     </li>
                     <li
                         className={activeTab === 'plans' ? 'active-tab' : ''}

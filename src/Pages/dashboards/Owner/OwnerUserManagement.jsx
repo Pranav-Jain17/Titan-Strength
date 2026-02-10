@@ -3,11 +3,12 @@ import { toast } from 'react-toastify';
 import './ownerUserManagement.css';
 
 const OwnerUserManagement = () => {
-    const [users, setUsers] = useState([]); // Stores ALL users
+    const [users, setUsers] = useState([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
     const [viewUser, setViewUser] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [activeTab, setActiveTab] = useState('All');
 
     const getAuthToken = () => {
         const storedUser = localStorage.getItem('titanUser');
@@ -78,13 +79,17 @@ const OwnerUserManagement = () => {
         });
     };
 
+    const tabs = ['All', 'Owner', 'Manager', 'Trainer', 'Member', 'User'];
+
     const filteredUsers = users.filter((user) => {
-        const term = search.toLowerCase();
-        return (
-            user.name?.toLowerCase().includes(term) ||
-            user.email?.toLowerCase().includes(term) ||
-            user._id?.toLowerCase().includes(term)
-        );
+        const matchesSearch =
+            user.name?.toLowerCase().includes(search.toLowerCase()) ||
+            user.email?.toLowerCase().includes(search.toLowerCase()) ||
+            user._id?.toLowerCase().includes(search.toLowerCase());
+
+        const matchesRole = activeTab === 'All' ? true : user.role?.toLowerCase() === activeTab.toLowerCase();
+
+        return matchesSearch && matchesRole;
     });
 
     return (
@@ -92,16 +97,30 @@ const OwnerUserManagement = () => {
             <section className="dashboard-section">
                 <div className="section-header-flex">
                     <h2>User Management</h2>
-                    <form onSubmit={handleSearchSubmit} className="search-form">
-                        <input
-                            type="text"
-                            placeholder="Search by name, email or ID..."
-                            value={search}
-                            onChange={handleSearchChange}
-                            className="search-input"
-                        />
-                        <button type="submit" className="btn-primary-small">Search</button>
-                    </form>
+
+                    <div className="header-controls">
+                        <div className="filter-tabs">
+                            {tabs.map(tab => (
+                                <button
+                                    key={tab}
+                                    className={`filter-tab ${activeTab === tab ? 'active' : ''}`}
+                                    onClick={() => setActiveTab(tab)}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
+
+                        <form onSubmit={handleSearchSubmit} className="search-form">
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                value={search}
+                                onChange={handleSearchChange}
+                                className="search-input"
+                            />
+                        </form>
+                    </div>
                 </div>
 
                 {loading ? <p className="loading-text">Loading users...</p> : (
@@ -130,7 +149,7 @@ const OwnerUserManagement = () => {
                                         <td className="fw-500">{user.name}</td>
                                         <td className="text-muted-sm">{user.email}</td>
                                         <td>
-                                            <span className={`status-badge ${user.role === 'owner' ? 'active' : 'inactive'}`}>
+                                            <span className={`status-badge ${user.role}`}>
                                                 {user.role}
                                             </span>
                                         </td>
@@ -143,7 +162,7 @@ const OwnerUserManagement = () => {
                                 {filteredUsers.length === 0 && (
                                     <tr>
                                         <td colSpan="6" className="empty-state-small">
-                                            {search ? "No users match your search." : "No users found."}
+                                            {search || activeTab !== 'All' ? "No users match your filters." : "No users found."}
                                         </td>
                                     </tr>
                                 )}
