@@ -17,10 +17,6 @@ TitanStrength is a comprehensive, full-stack gym management platform designed to
 
 ### Installation & Setup
 1. **Clone the repository**
-   ```
-```text?code_stdout&code_event_index=2
-[file-tag: TitanStrength-README-v2.md]
-
 ```bash
    git clone [https://github.com/your-username/TitanStrength.git](https://github.com/your-username/TitanStrength.git)
    ```
